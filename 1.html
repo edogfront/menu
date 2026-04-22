@@ -1,52 +1,36 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; -webkit-text-stroke: #000000; min-height: 14.0px}
-    span.s1 {font-kerning: none}
-  </style>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="900"> 
+    <style>
+        * { margin: 0; padding: 0; }
+        body { background: #000; overflow: hidden; width: 100vw; height: 100vh; cursor: pointer; }
+        img { width: 100vw; height: 100vh; object-fit: contain; }
+        /* Coffe Pei */
+        #hint { 
+            position: absolute; top: 10px; right: 10px; 
+            color: rgba(255,255,255,0.3); font-family: sans-serif; font-size: 12px; 
+        }
+    </style>
 </head>
-<body>
-<p class="p1"><span class="s1">&lt;!DOCTYPE html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;html&gt;</span></p>
-<p class="p1"><span class="s1">&lt;head&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;meta http-equiv="refresh" content="900"&gt;<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;style&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>* { margin: 0; padding: 0; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>body { background: #000; overflow: hidden; width: 100vw; height: 100vh; cursor: pointer; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>img { width: 100vw; height: 100vh; object-fit: contain; }</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>/* Coffe Pei */</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>#hint {<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>position: absolute; top: 10px; right: 10px;<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>color: rgba(255,255,255,0.3); font-family: sans-serif; font-size: 12px;<span class="Apple-converted-space"> </span></span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/head&gt;</span></p>
-<p class="p1"><span class="s1">&lt;body onclick="openFullscreen();"&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;div id="hint"&gt;Нажмите OK для во весь экран&lt;/div&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;img src="menu_hotdog2026.gif&gt;</span></p>
-<p class="p2"><span class="s1"></span><br></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;script&gt;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>function openFullscreen() {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>var elem = document.documentElement;</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>if (elem.requestFullscreen) {</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>elem.requestFullscreen();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else if (elem.webkitRequestFullscreen) { /* Safari/Old TVs */</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>elem.webkitRequestFullscreen();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>} else if (elem.msRequestFullscreen) { /* IE11 */</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">                </span>elem.msRequestFullscreen();</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">            </span>document.getElementById('hint').style.display = 'none';</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">        </span>}</span></p>
-<p class="p1"><span class="s1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/body&gt;</span></p>
-<p class="p1"><span class="s1">&lt;/html&gt;</span></p>
+<body onclick="openFullscreen();">
+    <div id="hint">Нажмите OK для во весь экран</div>
+    <img src="menu_hotdog2026.jpg">
+
+    <script>
+        function openFullscreen() {
+            var elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari/Old TVs */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+            document.getElementById('hint').style.display = 'none';
+        }
+    </script>
 </body>
 </html>
+
