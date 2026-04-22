@@ -3,12 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        /* Убираем все отступы и прокрутку */
         * { margin: 0; padding: 0; background: #000; overflow: hidden; }
-        body { width: 100vw; height: 100vh; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        
+        body, html { width: 100%; height: 100%; }
+
+        /* Растягиваем картинку на весь экран без исключений */
+        img { 
+            width: 100vw; 
+            height: 100vh; 
+            object-fit: fill; /* fill растянет ровно по границам, contain оставит пропорции */
+            display: block;
+        }
+
         #hint { 
             position: absolute; top: 10px; right: 10px; 
             color: rgba(255,255,255,0.2); font-family: sans-serif; font-size: 10px; 
+            z-index: 999;
         }
     </style>
 </head>
@@ -26,15 +37,26 @@
             document.getElementById('hint').style.display = 'none';
         }
 
-        // Функция мягкого обновления для GIF
+        // Обновление GIF без потери анимации
         function refreshGif() {
             const img = document.getElementById('menuImage');
-            const downloadAnchor = new Image();
-            
-            // Предзагрузка новой версии в фоне
-            downloadAnchor.onload = function() {
-                img.src = downloadAnchor.src;
-            };
+            const newSrc = IMG_URL + '?t=' + new Date().getTime();
+            img.src = newSrc;
+        }
+
+        // Проверка обновления каждые 30 минут
+        setInterval(refreshGif, 1800000);
+
+        // Перезагрузка в 4 утра
+        setInterval(function() {
+            const now = new Date();
+            if (now.getHours() === 4 && now.getMinutes() === 0) {
+                location.reload();
+            }
+        }, 60000);
+    </script>
+</body>
+</html>            };
             downloadAnchor.src = IMG_URL + '?t=' + new Date().getTime();
         }
 
