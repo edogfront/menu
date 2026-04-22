@@ -2,35 +2,51 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="900"> 
     <style>
         * { margin: 0; padding: 0; }
         body { background: #000; overflow: hidden; width: 100vw; height: 100vh; cursor: pointer; }
-        img { width: 100vw; height: 100vh; object-fit: contain; }
-        /* Coffe Pei */
+        img { width: 100vw; height: 100vh; object-fit: contain; display: block; }
         #hint { 
             position: absolute; top: 10px; right: 10px; 
-            color: rgba(255,255,255,0.3); font-family: sans-serif; font-size: 12px; 
+            color: rgba(255,255,255,0.2); font-family: sans-serif; font-size: 10px; 
         }
     </style>
 </head>
 <body onclick="openFullscreen();">
     <div id="hint">Нажмите OK для во весь экран</div>
-    <img src="Menu_hotdog2026.gif">
+    <img id="menuImage" src="Manu_hotdog2026.gif">
 
     <script>
+        const IMG_URL = 'Manu_hotdog2026.gif';
+
+        // 1. Функция полноэкранного режима
         function openFullscreen() {
             var elem = document.documentElement;
-            if (elem.requestFullscreen) {
-                elem.requestFullscreen();
-            } else if (elem.webkitRequestFullscreen) { /* Safari/Old TVs */
-                elem.webkitRequestFullscreen();
-            } else if (elem.msRequestFullscreen) { /* IE11 */
-                elem.msRequestFullscreen();
-            }
+            if (elem.requestFullscreen) { elem.requestFullscreen(); }
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
             document.getElementById('hint').style.display = 'none';
         }
+
+        // 2. Логика обновления (проверка версии)
+        function updateImage() {
+            const imgElement = document.getElementById('menuImage');
+            // Добавляем к ссылке случайное число, чтобы браузер НЕ брал старую версию из кэша
+            const newSrc = IMG_URL + '?v=' + new Date().getTime();
+            imgElement.src = newSrc;
+            console.log('Меню обновлено');
+        }
+
+        // 3. Планировщик: проверка каждые 30 минут, пока ТВ включен
+        setInterval(updateImage, 30 * 60 * 1000);
+
+        // 4. Ночная проверка (перезагрузка страницы целиком раз в сутки в 04:00 утра)
+        function checkNightReload() {
+            const now = new Date();
+            if (now.getHours() === 4 && now.getMinutes() === 0) {
+                location.reload(true); 
+            }
+        }
+        setInterval(checkNightReload, 60000); // Проверять время каждую минуту
     </script>
 </body>
 </html>
-
