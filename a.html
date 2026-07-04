@@ -149,11 +149,16 @@
             
             lines.shift(); 
             const categories = {};
+            let currentCategory = 'empty'; // Переменная для хранения текущей категории при разборе строк
             
             lines.forEach(cols => {
                 if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
                     let cat = cols[0].trim();
-                    if (cat === '') cat = 'empty';
+                    
+                    // Если ячейка категории заполнена, обновляем текущую категорию
+                    if (cat !== '') {
+                        currentCategory = cat;
+                    }
                     
                     const name = cols[1].trim();
                     let volume = cols[2].trim();
@@ -164,15 +169,15 @@
                         volume = volume + ' мл';
                     }
 
-                    if (!categories[cat]) categories[cat] = {};
+                    if (!categories[currentCategory]) categories[currentCategory] = {};
                     
-                    if (categories[cat][name]) {
-                        categories[cat][name].prices.push({ volume, price });
-                        if (description !== '' && categories[cat][name].description === '') {
-                            categories[cat][name].description = description;
+                    if (categories[currentCategory][name]) {
+                        categories[currentCategory][name].prices.push({ volume, price });
+                        if (description !== '' && categories[currentCategory][name].description === '') {
+                            categories[currentCategory][name].description = description;
                         }
                     } else {
-                        categories[cat][name] = {
+                        categories[currentCategory][name] = {
                             description: description,
                             prices: [{ volume, price }]
                         };
@@ -188,6 +193,7 @@
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
 
             let addonsHtml = '';
+            // Ищем ключ "добавки" без привязки к регистру букв
             const addonsKey = Object.keys(categories).find(k => k.toLowerCase() === 'добавки');
             
             if (addonsKey) {
