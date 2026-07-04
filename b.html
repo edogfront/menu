@@ -21,7 +21,8 @@
         .item-name { font-weight: bold; color: #2c3e72; }
         .item-description { font-size: 13px; color: #657195; margin-top: 4px; font-weight: normal; line-height: 1.2; padding-right: 15px; }
         
-        .frappuccino-item .item-name { font-size: 28px; font-weight: 900; text-transform: uppercase; }
+        /* Стиль для позиций без категории */
+        .special-item .item-name { font-size: 28px; font-weight: 900; text-transform: uppercase; }
         
         .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
         .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
@@ -60,15 +61,28 @@
             }
             if (row.length > 1 || row[0] !== '') lines.push(row);
             lines.shift();
-            const categories = {}; let lastCat = 'empty';
+            
+            const categories = {}; 
+            let lastCat = null; // Убрали 'empty', теперь категория назначается только если она есть
+            
             lines.forEach(cols => {
                 if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
                     let cat = cols[0].trim();
+                    let name = cols[1].trim();
+                    
+                    // Если категория указана, запоминаем её
                     if (cat !== '') lastCat = cat;
-                    if (!categories[lastCat]) categories[lastCat] = {};
+                    
+                    // Если категории нет, создаем уникальный блок для позиции (имя категории = имя позиции)
+                    let currentTarget = (cat === '') ? `SPECIAL_${name}` : lastCat;
+                    
+                    if (!categories[currentTarget]) categories[currentTarget] = { isSpecial: (cat === ''), name: name };
+                    
                     let vol = cols[2].trim();
                     if (/^[0-9.,]+$/.test(vol)) vol += ' г';
-                    categories[lastCat][cols[1].trim()] = { desc: cols[4] ? cols[4].trim() : '', prices: [{ vol, pr: cols[3].trim() }] };
+                    
+                    if (!categories[currentTarget].items) categories[currentTarget].items = {};
+                    categories[currentTarget].items[name] = { desc: cols[4] ? cols[4].trim() : '', vol, pr: cols[3].trim() };
                 }
             });
             return categories;
@@ -78,27 +92,30 @@
             const leftCol = document.getElementById('left-column'), rightCol = document.getElementById('right-column');
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
             
-            let allCats = Object.keys(categories);
-            let sortedCats = allCats.filter(k => k.toLowerCase() !== 'добавки');
-            let addons = allCats.find(k => k.toLowerCase() === 'добавки');
-            if (addons) sortedCats.push(addons);
+            let allKeys = Object.keys(categories);
+            let sortedKeys = allKeys.filter(k => k.toLowerCase() !== 'добавки');
+            let addons = allKeys.find(k => k.toLowerCase() === 'добавки');
+            if (addons) sortedKeys.push(addons);
 
-            const half = Math.ceil(sortedCats.length / 2);
-            sortedCats.forEach((name, i) => {
+            const half = Math.ceil(sortedKeys.length / 2);
+            
+            sortedKeys.forEach((key, i) => {
+                let catData = categories[key];
+                let isAddon = (key.toLowerCase() === 'добавки');
                 let html = `<div class="category-block">`;
-                if (name.toLowerCase() !== 'добавки') {
-                    if (name !== 'empty') html += `<div class="category-header"><h2 class="category-title">${name}</h2></div>`;
+                
+                if (!isAddon) {
+                    if (!catData.isSpecial) html += `<div class="category-header"><h2 class="category-title">${key}</h2></div>`;
                 } else {
-                    html += `<div class="addons-block"><h2 class="category-title">${name}</h2>`;
+                    html += `<div class="addons-block"><h2 class="category-title">Добавки</h2>`;
                 }
 
-                for (let item in categories[name]) {
-                    let d = categories[name][item];
-                    if (name.toLowerCase() !== 'добавки') {
-                        let isSpecial = (name === 'empty');
-                        html += `<div class="menu-item ${isSpecial ? 'frappuccino-item' : ''}"><div class="item-name-block"><span class="item-name">${item}</span><div class="item-description">${d.desc}</div></div><div class="item-prices-block"><span class="price-single"><span class="vol-label">${d.prices[0].vol}</span>${d.prices[0].pr}</span></div></div>`;
+                for (let itemName in catData.items || catData) {
+                    let d = isAddon ? { pr: catData[itemName].pr } : catData.items[itemName];
+                    if (!isAddon) {
+                        html += `<div class="menu-item ${catData.isSpecial ? 'special-item' : ''}"><div class="item-name-block"><span class="item-name">${itemName}</span><div class="item-description">${d.desc}</div></div><div class="item-prices-block"><span class="price-single"><span class="vol-label">${d.vol}</span>${d.pr}</span></div></div>`;
                     } else {
-                        html += `<div class="addon-item"><span class="item-name">${item}</span><span class="addon-price">${d.prices[0].pr}</span></div>`;
+                        html += `<div class="addon-item"><span class="item-name">${itemName}</span><span class="addon-price">${d.pr}</span></div>`;
                     }
                 }
                 html += `</div>`;
