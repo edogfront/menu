@@ -54,7 +54,6 @@
             padding-right: 15px;
         }
         
-        /* Исправлено: Стили цен и объемов теперь полностью синхронны с Экраном 1 */
         .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
         .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
         .price-single .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
@@ -96,9 +95,7 @@
 
     <script>
         const SCREEN_NAME = 'screen2'; 
-        const GOOGLE_CSV_URL = SCREEN_NAME === 'screen1' 
-            ? 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=0&single=true&output=csv' 
-            : 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=212811701&single=true&output=csv';
+        const GOOGLE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=212811701&single=true&output=csv';
 
         function openFullscreen() {
             var elem = document.documentElement;
@@ -111,7 +108,7 @@
             const video = document.getElementById('menu-video');
             const img = document.getElementById('menu-img');
             const timestamp = new Date().getTime();
-            const basePath = SCREEN_NAME === 'screen1' ? 'screen1/menu_media' : 'screen2/menu_media';
+            const basePath = 'screen2/menu_media';
 
             const testVideo = document.createElement('video');
             testVideo.src = `${basePath}.mp4?t=${timestamp}`;
@@ -131,29 +128,39 @@
             };
         }
 
+        // Защищенный парсер CSV, устойчивый к переносам строк внутри ячеек
         function parseCSV(text) {
-            const lines = text.split('\n').map(line => {
-                const result = [];
-                let current = '';
-                let inQuotes = false;
-                for (let i = 0; i < line.length; i++) {
-                    const char = line[i];
-                    if (char === '"') { inQuotes = !inQuotes; }
-                    else if (char === ',' && !inQuotes) { result.push(current); current = ''; }
-                    else { current += char; }
+            const lines = [];
+            let row = [""];
+            let inQuotes = false;
+
+            for (let i = 0; i < text.length; i++) {
+                let r = text[i];
+                let next = text[i+1];
+
+                if (r === '"') {
+                    if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
+                    else { inQuotes = !inQuotes; }
+                } else if (r === ',' && !inQuotes) {
+                    row.push('');
+                } else if ((r === '\r' || r === '\n') && !inQuotes) {
+                    if (r === '\r' && next === '\n') { i++; }
+                    lines.push(row);
+                    row = [''];
+                } else {
+                    row[row.length - 1] += r;
                 }
-                result.push(current);
-                return result;
-            });
+            }
+            if (row.length > 1 || row[0] !== '') { lines.push(row); }
+
+            lines.shift(); // Удаляем шапку таблицы
             
-            lines.shift(); 
             const categories = {};
             let currentCategory = 'empty';
             
             lines.forEach(cols => {
                 if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
                     let cat = cols[0].trim();
-                    
                     if (cat !== '') {
                         currentCategory = cat;
                     }
@@ -163,7 +170,7 @@
                     const price = cols[3].trim();
                     const description = cols[4] ? cols[4].trim() : '';
 
-                    // Универсальная подстановка единиц (г), которая не ломает позиции с готовыми "мл"
+                    // Если объем числовой — добавляем "г", если там уже есть "мл" или пусто — оставляем как есть
                     if (volume !== '') {
                         if (/^[0-9.,]+$/.test(volume)) {
                             volume = volume + ' г';
@@ -217,7 +224,6 @@
 
             catNames.forEach((catName, index) => {
                 let html = `<div class="category-block">`;
-                
                 if (catName !== 'empty') {
                     html += `
                         <div class="category-header">
