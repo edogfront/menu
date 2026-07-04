@@ -3,117 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Цифровое Меню - Экран 2</title>
+    <title>Меню</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; overflow: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; overflow: hidden; }
         body, html { width: 100vw; height: 100vh; background-color: #fff; color: #2c3e72; }
         .menu-container { display: flex; width: 100%; height: 100%; }
-        .side-column { width: 38%; height: 100%; padding: 40px 50px; position: relative; display: flex; flex-direction: column; }
-        .center-column { width: 24%; height: 100%; background-color: #ffcc00; position: relative; display: flex; align-items: center; justify-content: center; }
-        .center-column img, .center-column video { width: 100%; height: 100%; object-fit: cover; display: none; }
-        
-        .category-block { margin-bottom: 35px; }
-        .category-header { display: flex; width: 100%; margin-bottom: 15px; }
-        .category-title { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; text-align: left; }
-        
-        .menu-item { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 16px; font-size: 18px; }
-        .item-name-block { flex: 1; text-align: left; }
-        .item-name { font-weight: bold; color: #2c3e72; }
-        .item-description { font-size: 13px; color: #657195; margin-top: 4px; font-weight: normal; line-height: 1.2; padding-right: 15px; }
-        
-        .special-item { border-top: 2px solid #2c3e72; margin-top: 10px; padding-top: 15px; }
-        .special-item .item-name { font-size: 28px; font-weight: 900; text-transform: uppercase; }
-        
-        .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
-        .price-set { display: flex; }
-        .price-item { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
-        .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
-        
-        .addons-block { position: absolute; bottom: 40px; left: 50px; right: 50px; background: #fff; padding-top: 15px; border-top: 2px dashed #2c3e72; }
-        .addons-block .category-title { font-size: 22px; color: #2c3e72; margin-bottom: 10px; }
-        .addon-item { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 8px; }
-        .addon-item .item-name { font-weight: normal; color: #555c70; }
-        .addon-item .addon-price { font-size: 18px; font-weight: 900; color: #2c3e72; }
-        
-        #hint { position: absolute; top: 10px; right: 10px; color: rgba(0,0,0,0.2); font-size: 10px; z-index: 999; cursor: pointer; }
+        .side-column { width: 38%; height: 100%; padding: 40px; }
+        .center-column { width: 24%; background-color: #ffcc00; }
+        .category-block { margin-bottom: 25px; }
+        .category-title { font-size: 28px; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; }
+        .menu-item { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .item-name { font-weight: bold; }
+        .item-description { font-size: 12px; color: #666; }
+        .price-item { margin-left: 10px; font-weight: 900; }
+        .vol-label { font-size: 11px; color: #999; display: block; }
     </style>
 </head>
-<body onclick="openFullscreen();">
-    <div id="hint">Нажмите OK для во весь экран</div>
+<body>
     <div class="menu-container">
-        <div class="side-column" id="left-column"></div>
-        <div class="center-column" id="media-block">
-            <video id="menu-video" autoplay loop muted playsinline></video>
-            <img id="menu-img" alt="">
-        </div>
-        <div class="side-column" id="right-column"></div>
+        <div class="side-column" id="left-col"></div>
+        <div class="center-column"></div>
+        <div class="side-column" id="right-col"></div>
     </div>
+
     <script>
-        const GOOGLE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=212811701&single=true&output=csv';
+        const URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=212811701&single=true&output=csv&t=' + Date.now();
 
-        function parseCSV(text) {
-            const lines = text.split(/\r?\n/);
-            const menu = { categories: {}, order: [] };
-            let lastCat = null;
+        fetch(URL).then(r => r.text()).then(text => {
+            const lines = text.split(/\r?\n/).slice(1);
+            const menu = {}; // Структура: { "Категория": { "Товар": [цены] } }
 
-            lines.forEach((line, index) => {
-                if (index === 0) return;
-                const cols = line.split(',');
-                if (cols.length < 2 || !cols[1].trim()) return;
-
-                let cat = cols[0].trim();
-                let name = cols[1].trim();
-                let vol = cols[2] ? cols[2].trim() : "";
-                let price = cols[3] ? cols[3].trim() : "";
-                let desc = cols[4] ? cols[4].trim() : "";
-
-                if (cat !== "") lastCat = cat;
-                let targetCat = (lastCat === null || lastCat === "") ? "SPECIAL_" + name : lastCat;
+            lines.forEach(line => {
+                const [cat, name, vol, price, desc] = line.split(',').map(s => s.trim());
+                if (!name) return;
                 
-                if (!menu.categories[targetCat]) {
-                    menu.categories[targetCat] = { items: {}, isSpecial: (lastCat === null || lastCat === ""), title: (cat || name) };
-                    menu.order.push(targetCat);
-                }
-
-                if (!menu.categories[targetCat].items[name]) {
-                    menu.categories[targetCat].items[name] = { desc, prices: [] };
-                }
-                menu.categories[targetCat].items[name].prices.push({ vol, price });
+                // Если ячейка категории пустая, называем её именем товара, чтобы она стала заголовком
+                const category = cat === "" ? name : cat;
+                
+                if (!menu[category]) menu[category] = { items: {}, isSingle: cat === "" };
+                if (!menu[category].items[name]) menu[category].items[name] = { desc, prices: [] };
+                
+                menu[category].items[name].prices.push({ vol, price });
             });
-            return menu;
-        }
 
-        function renderMenu(menu) {
-            const leftCol = document.getElementById('left-column'), rightCol = document.getElementById('right-column');
-            leftCol.innerHTML = ''; rightCol.innerHTML = '';
+            const left = document.getElementById('left-col');
+            const right = document.getElementById('right-col');
+            const keys = Object.keys(menu);
             
-            const keys = menu.order;
-            const half = Math.ceil(keys.length / 2);
-
-            keys.forEach((key, i) => {
-                const cat = menu.categories[key];
+            keys.forEach((cat, i) => {
                 let html = `<div class="category-block">`;
-                if (key.toLowerCase() !== 'добавки' && !cat.isSpecial) {
-                    html += `<div class="category-header"><h2 class="category-title">${cat.title}</h2></div>`;
-                }
-
-                for (let itemName in cat.items) {
-                    let item = cat.items[itemName];
-                    let isSpecial = cat.isSpecial;
-                    html += `<div class="menu-item ${isSpecial ? 'special-item' : ''}">
-                        <div class="item-name-block"><span class="item-name">${itemName}</span><div class="item-description">${item.desc}</div></div>
-                        <div class="item-prices-block"><div class="price-set">`;
-                    item.prices.forEach(p => {
-                        html += `<span class="price-item">${p.vol ? `<span class="vol-label">${p.vol}</span>` : ''}${p.price}</span>`;
-                    });
-                    html += `</div></div></div>`;
+                // Если это не "без категории" (не отдельный товар), выводим заголовок
+                if (!menu[cat].isSingle) html += `<div class="category-title">${cat}</div>`;
+                
+                for (let name in menu[cat].items) {
+                    const item = menu[cat].items[name];
+                    html += `<div class="menu-item">
+                        <div>
+                            <div class="item-name">${name}</div>
+                            <div class="item-description">${item.desc}</div>
+                        </div>
+                        <div style="display:flex">
+                            ${item.prices.map(p => `<div class="price-item"><span class="vol-label">${p.vol}</span>${p.price}</div>`).join('')}
+                        </div>
+                    </div>`;
                 }
                 html += `</div>`;
-                if (i < half) leftCol.innerHTML += html; else rightCol.innerHTML += html;
+                
+                if (i < Math.ceil(keys.length / 2)) left.innerHTML += html;
+                else right.innerHTML += html;
             });
-        }
-
-        fetch(GOOGLE_CSV_URL + '&t=' + new Date().getTime()).then(r => r.text()).then(t => renderMenu(parseCSV(t)));
+        });
     </script>
 </body>
 </html>
