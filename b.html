@@ -7,83 +7,30 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; overflow: hidden; }
         body, html { width: 100vw; height: 100vh; background-color: #fff; color: #2c3e72; }
-
-        .menu-container {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-        .side-column {
-            width: 38%;
-            height: 100%;
-            padding: 40px 50px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-        .center-column {
-            width: 24%;
-            height: 100%;
-            background-color: #ffcc00;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .center-column img, .center-column video {
-            width: 100%; height: 100%; object-fit: cover; display: none;
-        }
-
+        .menu-container { display: flex; width: 100%; height: 100%; }
+        .side-column { width: 38%; height: 100%; padding: 40px 50px; position: relative; display: flex; flex-direction: column; }
+        .center-column { width: 24%; height: 100%; background-color: #ffcc00; position: relative; display: flex; align-items: center; justify-content: center; }
+        .center-column img, .center-column video { width: 100%; height: 100%; object-fit: cover; display: none; }
         .category-block { margin-bottom: 35px; }
         .category-header { display: flex; width: 100%; margin-bottom: 15px; }
-        .category-title { 
-            font-size: 28px; font-weight: 900; text-transform: uppercase; 
-            letter-spacing: 1px; text-align: left;
-        }
-
+        .category-title { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; text-align: left; }
         .menu-item { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 16px; font-size: 18px; }
         .item-name-block { flex: 1; text-align: left; }
         .item-name { font-weight: bold; color: #2c3e72; }
-        
-        .item-description { 
-            font-size: 13px; 
-            color: #657195; 
-            margin-top: 4px; 
-            font-weight: normal; 
-            line-height: 1.2;
-            padding-right: 15px;
-        }
-        
+        .item-description { font-size: 13px; color: #657195; margin-top: 4px; font-weight: normal; line-height: 1.2; padding-right: 15px; }
         .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
         .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
         .price-single .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
-
-        /* Специальный стиль для Фраппучино: формат заголовка (28px) с сохранением структуры меню */
-        .frappuccino-item { margin-top: 15px; margin-bottom: 35px; }
-        .frappuccino-item .item-name { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
-        .frappuccino-item .price-single { font-size: 28px; width: 85px; }
-        .frappuccino-item .price-single .vol-label { font-size: 13px; font-weight: bold; color: #2c3e72; }
-
-        .addons-block {
-            position: absolute;
-            bottom: 40px;
-            left: 50px;
-            right: 50px;
-            background: #fff;
-            padding-top: 15px;
-            border-top: 2px dashed #2c3e72;
-        }
+        .addons-block { position: absolute; bottom: 40px; left: 50px; right: 50px; background: #fff; padding-top: 15px; border-top: 2px dashed #2c3e72; }
         .addons-block .category-title { font-size: 22px; color: #2c3e72; margin-bottom: 10px; }
         .addon-item { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 8px; }
         .addon-item .item-name { font-weight: normal; color: #555c70; }
         .addon-item .addon-price { font-size: 18px; font-weight: 900; color: #2c3e72; }
-
         #hint { position: absolute; top: 10px; right: 10px; color: rgba(0,0,0,0.2); font-size: 10px; z-index: 999; cursor: pointer; }
     </style>
 </head>
 <body onclick="openFullscreen();">
     <div id="hint">Нажмите OK для во весь экран</div>
-
     <div class="menu-container">
         <div class="side-column" id="left-column"></div>
         <div class="center-column" id="media-block">
@@ -92,220 +39,66 @@
         </div>
         <div class="side-column" id="right-column"></div>
     </div>
-
     <script>
-        const SCREEN_NAME = 'screen2'; 
         const GOOGLE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=212811701&single=true&output=csv';
 
-        function openFullscreen() {
-            var elem = document.documentElement;
-            if (elem.requestFullscreen) { elem.requestFullscreen(); }
-            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
-            document.getElementById('hint').style.display = 'none';
-        }
-
-        function loadMedia() {
-            const video = document.getElementById('menu-video');
-            const img = document.getElementById('menu-img');
-            const timestamp = new Date().getTime();
-            const basePath = 'screen2/menu_media';
-
-            const testVideo = document.createElement('video');
-            testVideo.src = `${basePath}.mp4?t=${timestamp}`;
-            testVideo.oncanplaythrough = function() {
-                video.src = testVideo.src; video.style.display = 'block'; img.style.display = 'none';
-            };
-            testVideo.onerror = function() {
-                const testGif = new Image();
-                testGif.src = `${basePath}.gif?t=${timestamp}`;
-                testGif.onload = function() {
-                    img.src = testGif.src; img.style.display = 'block'; video.style.display = 'none';
-                };
-                testVideo.onerror = function() {
-                    img.src = `${basePath}.png?t=${timestamp}`;
-                    img.style.display = 'block'; video.style.display = 'none';
-                };
-            };
-        }
-
         function parseCSV(text) {
-            const lines = [];
-            let row = [""];
-            let inQuotes = false;
-
+            const lines = []; let row = [""]; let inQuotes = false;
             for (let i = 0; i < text.length; i++) {
-                let r = text[i];
-                let next = text[i+1];
-
-                if (r === '"') {
-                    if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; }
-                    else { inQuotes = !inQuotes; }
-                } else if (r === ',' && !inQuotes) {
-                    row.push('');
-                } else if ((r === '\r' || r === '\n') && !inQuotes) {
-                    if (r === '\r' && next === '\n') { i++; }
-                    lines.push(row);
-                    row = [''];
-                } else {
-                    row[row.length - 1] += r;
-                }
+                let r = text[i]; let next = text[i+1];
+                if (r === '"') { if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; } else { inQuotes = !inQuotes; } }
+                else if (r === ',' && !inQuotes) { row.push(''); }
+                else if ((r === '\r' || r === '\n') && !inQuotes) { if (r === '\r' && next === '\n') { i++; } lines.push(row); row = ['']; }
+                else { row[row.length - 1] += r; }
             }
-            if (row.length > 1 || row[0] !== '') { lines.push(row); }
-
-            lines.shift(); 
-            
-            const categories = {};
-            let currentCategory = 'empty';
-            
+            if (row.length > 1 || row[0] !== '') lines.push(row);
+            lines.shift();
+            const categories = {}; let lastCat = 'empty';
             lines.forEach(cols => {
                 if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
                     let cat = cols[0].trim();
-                    const name = cols[1].trim();
-                    
-                    if (cat !== '') {
-                        currentCategory = cat;
-                    }
-                    
-                    // Изолируем Фраппучино в собственную категорию, чтобы оно не прилипало к Смузи
-                    let itemCategory = currentCategory;
-                    if (name.toLowerCase().includes('фраппучино')) {
-                        itemCategory = 'FRAППУЧИНО';
-                    }
-                    
-                    let volume = cols[2].trim();
-                    const price = cols[3].trim();
-                    const description = cols[4] ? cols[4].trim() : '';
-
-                    if (volume !== '') {
-                        if (/^[0-9.,]+$/.test(volume)) {
-                            // Фраппучино маркируем как напиток (мл), остальное — как еду (г)
-                            volume = name.toLowerCase().includes('фраппучино') ? volume + ' мл' : volume + ' г';
-                        }
-                    }
-
-                    if (!categories[itemCategory]) categories[itemCategory] = {};
-                    
-                    if (categories[itemCategory][name]) {
-                        categories[itemCategory][name].prices.push({ volume, price });
-                        if (description !== '' && categories[itemCategory][name].description === '') {
-                            categories[itemCategory][name].description = description;
-                        }
-                    } else {
-                        categories[itemCategory][name] = {
-                            description: description,
-                            prices: [{ volume, price }]
-                        };
-                    }
+                    if (cat !== '') lastCat = cat;
+                    if (!categories[lastCat]) categories[lastCat] = {};
+                    let vol = cols[2].trim();
+                    if (/^[0-9.,]+$/.test(vol)) vol += ' г';
+                    categories[lastCat][cols[1].trim()] = { desc: cols[4] ? cols[4].trim() : '', prices: [{ vol, pr: cols[3].trim() }] };
                 }
             });
             return categories;
         }
 
         function renderMenu(categories) {
-            const leftCol = document.getElementById('left-column');
-            const rightCol = document.getElementById('right-column');
+            const leftCol = document.getElementById('left-column'), rightCol = document.getElementById('right-column');
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
-
-            // 1. Извлекаем и выводим Фраппучино на самый верх левой колонки в формате крупного заголовка-строки
-            if (categories['FRAППУЧИНО']) {
-                let html = `<div class="category-block">`;
-                for (const itemName in categories['FRAППУЧИНО']) {
-                    const itemData = categories['FRAППУЧИНО'][itemName];
-                    html += `
-                        <div class="menu-item frappuccino-item">
-                            <div class="item-name-block">
-                                <span class="item-name">${itemName}</span>`;
-                    if (itemData.description && itemData.description !== '') {
-                        html += `<div class="item-description">${itemData.description}</div>`;
-                    }
-                    html += `</div>
-                            <div class="item-prices-block">`;
-                    itemData.prices.forEach(p => {
-                        const volLabel = `<span class="vol-label">${p.volume}</span>`;
-                        html += `<span class="price-single">${volLabel}${p.price}</span>`;
-                    });
-                    html += `</div></div>`;
-                }
-                html += `</div>`;
-                leftCol.innerHTML += html;
-                delete categories['FRAППУЧИНО'];
-            }
-
-            // 2. Извлекаем блок добавок вниз левой колонки
-            let addonsHtml = '';
-            const addonsKey = Object.keys(categories).find(k => k.toLowerCase() === 'добавки');
             
-            if (addonsKey) {
-                addonsHtml = `<div class="addons-block">`;
-                addonsHtml += `<h2 class="category-title">${addonsKey}</h2>`;
-                for (const itemName in categories[addonsKey]) {
-                    const itemData = categories[addonsKey][itemName];
-                    const price = itemData.prices[0] ? itemData.prices[0].price : '';
-                    addonsHtml += `
-                        <div class="addon-item">
-                            <span class="item-name">${itemName}</span>
-                            <span class="addon-price">${price}</span>
-                        </div>`;
-                }
-                addonsHtml += `</div>`;
-                delete categories[addonsKey];
+            let catNames = Object.keys(categories);
+            let addons = catNames.find(k => k.toLowerCase() === 'добавки');
+            if (addons) {
+                catNames = catNames.filter(k => k !== addons);
+                catNames.push(addons); // Добавки всегда в конец
             }
 
-            // 3. Распределяем остальные стандартные категории по двум колонкам
-            const catNames = Object.keys(categories);
             const half = Math.ceil(catNames.length / 2);
-
-            catNames.forEach((catName, index) => {
+            catNames.forEach((name, i) => {
                 let html = `<div class="category-block">`;
-                if (catName !== 'empty') {
-                    html += `
-                        <div class="category-header">
-                            <h2 class="category-title">${catName}</h2>
-                        </div>`;
-                }
+                if (name.toLowerCase() !== 'добавки') html += `<div class="category-header"><h2 class="category-title">${name === 'empty' ? '' : name}</h2></div>`;
+                else html += `<div class="addons-block"><h2 class="category-title">${name}</h2>`;
 
-                for (const itemName in categories[catName]) {
-                    const itemData = categories[catName][itemName];
-                    html += `
-                        <div class="menu-item">
-                            <div class="item-name-block">
-                                <span class="item-name">${itemName}</span>`;
-                    if (itemData.description && itemData.description !== '') {
-                        html += `<div class="item-description">${itemData.description}</div>`;
+                for (let item in categories[name]) {
+                    let d = categories[name][item];
+                    if (name.toLowerCase() !== 'добавки') {
+                        html += `<div class="menu-item"><div class="item-name-block"><span class="item-name">${item}</span><div class="item-description">${d.desc}</div></div><div class="item-prices-block"><span class="price-single"><span class="vol-label">${d.prices[0].vol}</span>${d.prices[0].pr}</span></div></div>`;
+                    } else {
+                        html += `<div class="addon-item"><span class="item-name">${item}</span><span class="addon-price">${d.prices[0].pr}</span></div>`;
                     }
-                    html += `</div>
-                            <div class="item-prices-block">`;
-                    itemData.prices.forEach(p => {
-                        const volLabel = `<span class="vol-label">${p.volume}</span>`;
-                        html += `<span class="price-single">${volLabel}${p.price}</span>`;
-                    });
-                    html += `</div></div>`;
                 }
                 html += `</div>`;
-
-                if (index < half) { leftCol.innerHTML += html; } 
-                else { rightCol.innerHTML += html; }
+                if (i < half) leftCol.innerHTML += html; else rightCol.innerHTML += html;
             });
-
-            if (addonsHtml !== '') {
-                leftCol.innerHTML += addonsHtml;
-            }
         }
 
-        function updateMenuData() {
-            fetch(GOOGLE_CSV_URL, { cache: 'no-store' })
-                .then(res => res.text())
-                .then(text => {
-                    const data = parseCSV(text);
-                    renderMenu(data);
-                })
-                .catch(err => console.log('Ошибка связи с Google Sheets'));
-        }
-
-        loadMedia();
-        updateMenuData();
-        setInterval(updateMenuData, 2 * 60 * 1000); 
-        setInterval(loadMedia, 30 * 60 * 1000);   
+        function openFullscreen() { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); document.getElementById('hint').style.display = 'none'; }
+        fetch(GOOGLE_CSV_URL, { cache: 'no-store' }).then(r => r.text()).then(t => renderMenu(parseCSV(t)));
     </script>
 </body>
 </html>
