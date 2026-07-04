@@ -5,53 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Цифровое Меню - Экран 2</title>
     <style>
-        /* БАЗОВЫЕ НАСТРОЙКИ ЭКРАНА */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; overflow: hidden; }
         body, html { width: 100vw; height: 100vh; background-color: #fff; color: #2c3e72; }
 
-        /* Сетка: Три колонки (Левая 38%, Центр 24%, Правая 38%) */
         .menu-container {
-            display: table;
+            display: flex;
             width: 100%;
-            height: 100%;
-            table-layout: fixed;
-        }
-        .column {
-            display: table-cell;
-            vertical-align: top;
             height: 100%;
         }
         .side-column {
             width: 38%;
+            height: 100%;
             padding: 40px 50px;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
-        
-        /* Центральный медиа-блок (Желтый) */
         .center-column {
             width: 24%;
+            height: 100%;
             background-color: #ffcc00;
             position: relative;
-            vertical-align: middle;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .center-column img, .center-column video {
             width: 100%; height: 100%; object-fit: cover; display: none;
         }
 
-        /* ОБЫЧНЫЕ КАТЕГОРИИ И ТОВАРЫ */
-        .category-block { margin-bottom: 35px; page-break-inside: avoid; }
-        .category-header { display: table; width: 100%; margin-bottom: 15px; }
+        .category-block { margin-bottom: 35px; }
+        .category-header { display: flex; width: 100%; margin-bottom: 15px; }
         .category-title { 
             font-size: 28px; font-weight: 900; text-transform: uppercase; 
             letter-spacing: 1px; text-align: left;
         }
 
-        .menu-item { display: table; width: 100%; margin-bottom: 16px; font-size: 18px; }
-        .item-name-block { display: table-cell; text-align: left; vertical-align: top; }
+        .menu-item { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; margin-bottom: 16px; font-size: 18px; }
+        .item-name-block { flex: 1; text-align: left; }
         .item-name { font-weight: bold; color: #2c3e72; }
         
-        /* СТИЛЬ ДЛЯ ОПИСАНИЯ СОСТАВА */
         .item-description { 
             font-size: 13px; 
             color: #657195; 
@@ -61,18 +54,18 @@
             padding-right: 15px;
         }
         
-        .item-prices-block { display: table-cell; text-align: right; vertical-align: top; font-weight: 900; color: #2c3e72; padding-top: 2px; }
-        .price-single { display: inline-block; width: 60px; text-align: right; margin-left: 10px; vertical-align: top; }
-        .price-single .vol-label { display: block; font-size: 11px; color: #888; font-weight: normal; margin-bottom: 2px; }
+        /* Цена крупная, Объем мелкий */
+        .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
+        .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
+        .price-single .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
 
-        /* СТИЛЬ ВАРИАНТА А (Для товаров без категории) */
         .no-category-item { margin-top: 25px; margin-bottom: 25px; }
         .no-category-item .item-name { font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-        .no-category-item .price-single { font-size: 24px; width: 70px; }
+        .no-category-item .price-single { font-size: 28px; width: 85px; }
         .no-category-item .price-single .vol-label { font-size: 13px; font-weight: bold; color: #2c3e72; }
         .no-category-item .item-description { font-size: 14px; margin-top: 6px; }
 
-        /* СТИЛЬ ДЛЯ ДОБАВОК В ПРАВОМ НИЖНЕМ УГЛУ */
+        /* Фиксация добавок в нижней части левой колонки */
         .addons-block {
             position: absolute;
             bottom: 40px;
@@ -81,12 +74,11 @@
             background: #fff;
             padding-top: 15px;
             border-top: 2px dashed #2c3e72;
-            margin-bottom: 0;
         }
         .addons-block .category-title { font-size: 22px; color: #2c3e72; margin-bottom: 10px; }
         .addon-item { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 8px; }
         .addon-item .item-name { font-weight: normal; color: #555c70; }
-        .addon-item .addon-price { font-weight: bold; color: #2c3e72; }
+        .addon-item .addon-price { font-size: 18px; font-weight: 900; color: #2c3e72; }
 
         #hint { position: absolute; top: 10px; right: 10px; color: rgba(0,0,0,0.2); font-size: 10px; z-index: 999; cursor: pointer; }
     </style>
@@ -95,24 +87,19 @@
     <div id="hint">Нажмите OK для во весь экран</div>
 
     <div class="menu-container">
-        <div class="column side-column" id="left-column"></div>
-
-        <div class="column center-column" id="media-block">
+        <div class="side-column" id="left-column"></div>
+        <div class="center-column" id="media-block">
             <video id="menu-video" autoplay loop muted playsinline></video>
-            <img id="menu-img" alt="menu media">
+            <img id="menu-img" alt="">
         </div>
-
-        <div class="column side-column" id="right-column"></div>
+        <div class="side-column" id="right-column"></div>
     </div>
 
     <script>
-        // ================= НАСТРОЙКИ СВЯЗИ =================
         const SCREEN_NAME = 'screen2'; 
-        
         const GOOGLE_CSV_URL = SCREEN_NAME === 'screen1' 
             ? 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=0&single=true&output=csv' 
             : 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=212811701&single=true&output=csv';
-        // ===================================================
 
         function openFullscreen() {
             var elem = document.documentElement;
@@ -162,26 +149,35 @@
             
             lines.shift(); 
             const categories = {};
+            let currentCategory = 'empty'; // Переменная для хранения текущей категории при разборе строк
             
             lines.forEach(cols => {
                 if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
                     let cat = cols[0].trim();
-                    if (cat === '') cat = 'empty';
+                    
+                    // Если ячейка категории заполнена, обновляем текущую категорию
+                    if (cat !== '') {
+                        currentCategory = cat;
+                    }
                     
                     const name = cols[1].trim();
-                    const volume = cols[2].trim();
+                    let volume = cols[2].trim();
                     const price = cols[3].trim();
                     const description = cols[4] ? cols[4].trim() : '';
 
-                    if (!categories[cat]) categories[cat] = {};
+                    if (volume !== '' && /^[0-9.,]+$/.test(volume)) {
+                        volume = volume + ' г';
+                    }
+
+                    if (!categories[currentCategory]) categories[currentCategory] = {};
                     
-                    if (categories[cat][name]) {
-                        categories[cat][name].prices.push({ volume, price });
-                        if (description !== '' && categories[cat][name].description === '') {
-                            categories[cat][name].description = description;
+                    if (categories[currentCategory][name]) {
+                        categories[currentCategory][name].prices.push({ volume, price });
+                        if (description !== '' && categories[currentCategory][name].description === '') {
+                            categories[currentCategory][name].description = description;
                         }
                     } else {
-                        categories[cat][name] = {
+                        categories[currentCategory][name] = {
                             description: description,
                             prices: [{ volume, price }]
                         };
@@ -197,11 +193,14 @@
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
 
             let addonsHtml = '';
-            if (categories['Добавки']) {
-                addonsHtml = `<div class="category-block addons-block">`;
-                addonsHtml += `<h2 class="category-title">Добавки</h2>`;
-                for (const itemName in categories['Добавки']) {
-                    const itemData = categories['Добавки'][itemName];
+            // Ищем ключ "добавки" без привязки к регистру букв
+            const addonsKey = Object.keys(categories).find(k => k.toLowerCase() === 'добавки');
+            
+            if (addonsKey) {
+                addonsHtml = `<div class="addons-block">`;
+                addonsHtml += `<h2 class="category-title">${addonsKey}</h2>`;
+                for (const itemName in categories[addonsKey]) {
+                    const itemData = categories[addonsKey][itemName];
                     const price = itemData.prices[0] ? itemData.prices[0].price : '';
                     addonsHtml += `
                         <div class="addon-item">
@@ -210,7 +209,7 @@
                         </div>`;
                 }
                 addonsHtml += `</div>`;
-                delete categories['Добавки'];
+                delete categories[addonsKey];
             }
 
             const catNames = Object.keys(categories);
@@ -231,7 +230,6 @@
                     const itemClass = catName === 'empty' ? 'menu-item no-category-item' : 'menu-item';
                     
                     html += `<div class="${itemClass}">`;
-                    
                     html += `
                         <div class="item-name-block">
                             <span class="item-name">${itemName}</span>`;
@@ -254,7 +252,7 @@
             });
 
             if (addonsHtml !== '') {
-                rightCol.innerHTML += addonsHtml;
+                leftCol.innerHTML += addonsHtml;
             }
         }
 
