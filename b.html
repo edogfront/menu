@@ -54,7 +54,7 @@
             padding-right: 15px;
         }
         
-        /* Цена крупная, Объем мелкий */
+        /* Актуализировано: Цена крупная (24px), Объем мелкий (12px) над ней */
         .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
         .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
         .price-single .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
@@ -149,13 +149,12 @@
             
             lines.shift(); 
             const categories = {};
-            let currentCategory = 'empty'; // Переменная для хранения текущей категории при разборе строк
+            let currentCategory = 'empty';
             
             lines.forEach(cols => {
                 if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
                     let cat = cols[0].trim();
                     
-                    // Если ячейка категории заполнена, обновляем текущую категорию
                     if (cat !== '') {
                         currentCategory = cat;
                     }
@@ -165,6 +164,7 @@
                     const price = cols[3].trim();
                     const description = cols[4] ? cols[4].trim() : '';
 
+                    // Надежное добавление граммов для Экрана 2
                     if (volume !== '' && /^[0-9.,]+$/.test(volume)) {
                         volume = volume + ' г';
                     }
@@ -193,7 +193,6 @@
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
 
             let addonsHtml = '';
-            // Ищем ключ "добавки" без привязки к регистру букв
             const addonsKey = Object.keys(categories).find(k => k.toLowerCase() === 'добавки');
             
             if (addonsKey) {
