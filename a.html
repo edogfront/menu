@@ -65,7 +65,7 @@
         .no-category-item .price-single .vol-label { font-size: 13px; font-weight: bold; color: #2c3e72; }
         .no-category-item .item-description { font-size: 14px; margin-top: 6px; }
 
-        /* ДОБАВКИ В НИЖНЕЙ ЧАСТИ ЛЕВОЙ СТОРОНЫ */
+        /* Фиксация добавок в нижней части левой колонки */
         .addons-block {
             position: absolute;
             bottom: 40px;
@@ -90,7 +90,7 @@
         <div class="side-column" id="left-column"></div>
         <div class="center-column" id="media-block">
             <video id="menu-video" autoplay loop muted playsinline></video>
-            <img id="menu-img" alt="menu media">
+            <img id="menu-img" alt="">
         </div>
         <div class="side-column" id="right-column"></div>
     </div>
@@ -160,7 +160,6 @@
                     const price = cols[3].trim();
                     const description = cols[4] ? cols[4].trim() : '';
 
-                    // Сверхнадежное добавление "мл" (срабатывает на любые числа, включая дроби с точкой/запятой)
                     if (volume !== '' && /^[0-9.,]+$/.test(volume)) {
                         volume = volume + ' мл';
                     }
@@ -188,13 +187,14 @@
             const rightCol = document.getElementById('right-column');
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
 
-            // Рендерим добавки СТРОГО в левую колонку вниз
             let addonsHtml = '';
-            if (categories['Добавки']) {
+            const addonsKey = Object.keys(categories).find(k => k.toLowerCase() === 'добавки');
+            
+            if (addonsKey) {
                 addonsHtml = `<div class="addons-block">`;
-                addonsHtml += `<h2 class="category-title">Добавки</h2>`;
-                for (const itemName in categories['Добавки']) {
-                    const itemData = categories['Добавки'][itemName];
+                addonsHtml += `<h2 class="category-title">${addonsKey}</h2>`;
+                for (const itemName in categories[addonsKey]) {
+                    const itemData = categories[addonsKey][itemName];
                     const price = itemData.prices[0] ? itemData.prices[0].price : '';
                     addonsHtml += `
                         <div class="addon-item">
@@ -203,7 +203,7 @@
                         </div>`;
                 }
                 addonsHtml += `</div>`;
-                delete categories['Добавки'];
+                delete categories[addonsKey];
             }
 
             const catNames = Object.keys(categories);
@@ -245,7 +245,6 @@
                 else { rightCol.innerHTML += html; }
             });
 
-            // Вставляем добавки в конец левой колонки
             if (addonsHtml !== '') {
                 leftCol.innerHTML += addonsHtml;
             }
