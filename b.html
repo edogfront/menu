@@ -21,7 +21,7 @@
         .item-name { font-weight: bold; color: #2c3e72; }
         .item-description { font-size: 13px; color: #657195; margin-top: 4px; font-weight: normal; line-height: 1.2; padding-right: 15px; }
         
-        /* Стиль для позиций без категории */
+        .special-item { border-top: 2px solid #2c3e72; margin-top: 10px; padding-top: 15px; }
         .special-item .item-name { font-size: 28px; font-weight: 900; text-transform: uppercase; }
         
         .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
@@ -51,39 +51,26 @@
         const GOOGLE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=212811701&single=true&output=csv';
 
         function parseCSV(text) {
-            const lines = []; let row = [""]; let inQuotes = false;
-            for (let i = 0; i < text.length; i++) {
-                let r = text[i]; let next = text[i+1];
-                if (r === '"') { if (inQuotes && next === '"') { row[row.length - 1] += '"'; i++; } else { inQuotes = !inQuotes; } }
-                else if (r === ',' && !inQuotes) { row.push(''); }
-                else if ((r === '\r' || r === '\n') && !inQuotes) { if (r === '\r' && next === '\n') { i++; } lines.push(row); row = ['']; }
-                else { row[row.length - 1] += r; }
-            }
-            if (row.length > 1 || row[0] !== '') lines.push(row);
-            lines.shift();
-            
-            const categories = {}; 
-            let lastCat = null; // Убрали 'empty', теперь категория назначается только если она есть
-            
-            lines.forEach(cols => {
-                if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
-                    let cat = cols[0].trim();
-                    let name = cols[1].trim();
-                    
-                    // Если категория указана, запоминаем её
-                    if (cat !== '') lastCat = cat;
-                    
-                    // Если категории нет, создаем уникальный блок для позиции (имя категории = имя позиции)
-                    let currentTarget = (cat === '') ? `SPECIAL_${name}` : lastCat;
-                    
-                    if (!categories[currentTarget]) categories[currentTarget] = { isSpecial: (cat === ''), name: name };
-                    
-                    let vol = cols[2].trim();
-                    if (/^[0-9.,]+$/.test(vol)) vol += ' г';
-                    
-                    if (!categories[currentTarget].items) categories[currentTarget].items = {};
-                    categories[currentTarget].items[name] = { desc: cols[4] ? cols[4].trim() : '', vol, pr: cols[3].trim() };
-                }
+            const lines = text.split(/\r?\n/);
+            const categories = {};
+            let currentCat = "ОБЩЕЕ";
+
+            lines.forEach((line, index) => {
+                if (index === 0) return;
+                const cols = line.split(',');
+                if (cols.length < 2 || !cols[1].trim()) return;
+
+                let cat = cols[0].trim();
+                let name = cols[1].trim();
+                let vol = cols[2] ? cols[2].trim() : "";
+                let price = cols[3] ? cols[3].trim() : "";
+                let desc = cols[4] ? cols[4].trim() : "";
+                
+                let targetCat = (cat === "") ? "SPECIAL_" + name : cat;
+                if (cat !== "" && cat !== "SPECIAL") currentCat = cat;
+
+                if (!categories[targetCat]) categories[targetCat] = { items: [], isSpecial: (cat === "") };
+                categories[targetCat].items.push({ name, vol, price, desc });
             });
             return categories;
         }
@@ -92,39 +79,32 @@
             const leftCol = document.getElementById('left-column'), rightCol = document.getElementById('right-column');
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
             
-            let allKeys = Object.keys(categories);
-            let sortedKeys = allKeys.filter(k => k.toLowerCase() !== 'добавки');
-            let addons = allKeys.find(k => k.toLowerCase() === 'добавки');
-            if (addons) sortedKeys.push(addons);
+            const keys = Object.keys(categories);
+            const half = Math.ceil(keys.length / 2);
 
-            const half = Math.ceil(sortedKeys.length / 2);
-            
-            sortedKeys.forEach((key, i) => {
-                let catData = categories[key];
-                let isAddon = (key.toLowerCase() === 'добавки');
+            keys.forEach((key, i) => {
                 let html = `<div class="category-block">`;
+                const cat = categories[key];
                 
-                if (!isAddon) {
-                    if (!catData.isSpecial) html += `<div class="category-header"><h2 class="category-title">${key}</h2></div>`;
-                } else {
-                    html += `<div class="addons-block"><h2 class="category-title">Добавки</h2>`;
+                if (key.toLowerCase() !== 'добавки' && !cat.isSpecial) {
+                    html += `<div class="category-header"><h2 class="category-title">${key}</h2></div>`;
                 }
 
-                for (let itemName in catData.items || catData) {
-                    let d = isAddon ? { pr: catData[itemName].pr } : catData.items[itemName];
-                    if (!isAddon) {
-                        html += `<div class="menu-item ${catData.isSpecial ? 'special-item' : ''}"><div class="item-name-block"><span class="item-name">${itemName}</span><div class="item-description">${d.desc}</div></div><div class="item-prices-block"><span class="price-single"><span class="vol-label">${d.vol}</span>${d.pr}</span></div></div>`;
-                    } else {
-                        html += `<div class="addon-item"><span class="item-name">${itemName}</span><span class="addon-price">${d.pr}</span></div>`;
-                    }
-                }
+                cat.items.forEach(item => {
+                    // Логика вывода: если объема нет, vol-label вообще не создается
+                    let volHtml = item.vol ? `<span class="vol-label">${item.vol}</span>` : '';
+                    html += `<div class="menu-item ${cat.isSpecial ? 'special-item' : ''}">
+                        <div class="item-name-block"><span class="item-name">${item.name}</span><div class="item-description">${item.desc}</div></div>
+                        <div class="item-prices-block"><span class="price-single">${volHtml}${item.price}</span></div>
+                    </div>`;
+                });
                 html += `</div>`;
+
                 if (i < half) leftCol.innerHTML += html; else rightCol.innerHTML += html;
             });
         }
 
-        function openFullscreen() { if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen(); document.getElementById('hint').style.display = 'none'; }
-        fetch(GOOGLE_CSV_URL, { cache: 'no-store' }).then(r => r.text()).then(t => renderMenu(parseCSV(t)));
+        fetch(GOOGLE_CSV_URL + '&t=' + new Date().getTime()).then(r => r.text()).then(t => renderMenu(parseCSV(t)));
     </script>
 </body>
 </html>
