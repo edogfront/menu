@@ -150,7 +150,8 @@
             lines.shift(); 
             const categories = {};
             let currentCategory = 'empty'; 
-            
+
+
             lines.forEach(cols => {
                 if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
                     let cat = cols[0].trim();
