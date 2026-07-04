@@ -54,7 +54,7 @@
             padding-right: 15px;
         }
         
-        /* Актуализировано: Цена крупная (24px), Объем мелкий (12px) над ней */
+        /* Исправлено: Стили цен и объемов теперь полностью синхронны с Экраном 1 */
         .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
         .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
         .price-single .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
@@ -65,7 +65,6 @@
         .no-category-item .price-single .vol-label { font-size: 13px; font-weight: bold; color: #2c3e72; }
         .no-category-item .item-description { font-size: 14px; margin-top: 6px; }
 
-        /* Фиксация добавок в нижней части левой колонки */
         .addons-block {
             position: absolute;
             bottom: 40px;
@@ -164,9 +163,11 @@
                     const price = cols[3].trim();
                     const description = cols[4] ? cols[4].trim() : '';
 
-                    // Надежное добавление граммов для Экрана 2
-                    if (volume !== '' && /^[0-9.,]+$/.test(volume)) {
-                        volume = volume + ' г';
+                    // Универсальная подстановка единиц (г), которая не ломает позиции с готовыми "мл"
+                    if (volume !== '') {
+                        if (/^[0-9.,]+$/.test(volume)) {
+                            volume = volume + ' г';
+                        }
                     }
 
                     if (!categories[currentCategory]) categories[currentCategory] = {};
