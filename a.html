@@ -8,7 +8,6 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; overflow: hidden; }
         body, html { width: 100vw; height: 100vh; background-color: #fff; color: #2c3e72; }
 
-        /* Новая надежная сетка на Flexbox */
         .menu-container {
             display: flex;
             width: 100%;
@@ -18,7 +17,7 @@
             width: 38%;
             height: 100%;
             padding: 40px 50px;
-            position: relative; 
+            position: relative;
             display: flex;
             flex-direction: column;
         }
@@ -55,17 +54,18 @@
             padding-right: 15px;
         }
         
-        .item-prices-block { display: flex; justify-content: flex-end; font-weight: 900; color: #2c3e72; padding-top: 2px; }
-        .price-single { display: block; width: 65px; text-align: right; margin-left: 15px; }
-        .price-single .vol-label { display: block; font-size: 11px; color: #888; font-weight: normal; margin-bottom: 2px; }
+        /* Цена крупная, Объем мелкий */
+        .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
+        .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
+        .price-single .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
 
         .no-category-item { margin-top: 25px; margin-bottom: 25px; }
         .no-category-item .item-name { font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-        .no-category-item .price-single { font-size: 24px; width: 75px; }
+        .no-category-item .price-single { font-size: 28px; width: 85px; }
         .no-category-item .price-single .vol-label { font-size: 13px; font-weight: bold; color: #2c3e72; }
         .no-category-item .item-description { font-size: 14px; margin-top: 6px; }
 
-        /* ЖЕСТКАЯ ФИКСАЦИЯ ДОБАВОК ВНИЗУ */
+        /* ДОБАВКИ В НИЖНЕЙ ЧАСТИ ЛЕВОЙ СТОРОНЫ */
         .addons-block {
             position: absolute;
             bottom: 40px;
@@ -74,12 +74,11 @@
             background: #fff;
             padding-top: 15px;
             border-top: 2px dashed #2c3e72;
-            margin-bottom: 0;
         }
         .addons-block .category-title { font-size: 22px; color: #2c3e72; margin-bottom: 10px; }
         .addon-item { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 8px; }
         .addon-item .item-name { font-weight: normal; color: #555c70; }
-        .addon-item .addon-price { font-weight: bold; color: #2c3e72; }
+        .addon-item .addon-price { font-size: 18px; font-weight: 900; color: #2c3e72; }
 
         #hint { position: absolute; top: 10px; right: 10px; color: rgba(0,0,0,0.2); font-size: 10px; z-index: 999; cursor: pointer; }
     </style>
@@ -157,12 +156,12 @@
                     if (cat === '') cat = 'empty';
                     
                     const name = cols[1].trim();
-                    let volume = cols[2].trim().replace(/\s+/g, ''); // чистим скрытые пробелы
+                    let volume = cols[2].trim();
                     const price = cols[3].trim();
                     const description = cols[4] ? cols[4].trim() : '';
 
-                    // Надежное добавление "мл" (если в строке только цифры)
-                    if (volume !== '' && /^\d+$/.test(volume)) {
+                    // Сверхнадежное добавление "мл" (срабатывает на любые числа, включая дроби с точкой/запятой)
+                    if (volume !== '' && /^[0-9.,]+$/.test(volume)) {
                         volume = volume + ' мл';
                     }
 
@@ -189,9 +188,10 @@
             const rightCol = document.getElementById('right-column');
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
 
+            // Рендерим добавки СТРОГО в левую колонку вниз
             let addonsHtml = '';
             if (categories['Добавки']) {
-                addonsHtml = `<div class="category-block addons-block">`;
+                addonsHtml = `<div class="addons-block">`;
                 addonsHtml += `<h2 class="category-title">Добавки</h2>`;
                 for (const itemName in categories['Добавки']) {
                     const itemData = categories['Добавки'][itemName];
@@ -245,8 +245,9 @@
                 else { rightCol.innerHTML += html; }
             });
 
+            // Вставляем добавки в конец левой колонки
             if (addonsHtml !== '') {
-                rightCol.innerHTML += addonsHtml;
+                leftCol.innerHTML += addonsHtml;
             }
         }
 
