@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Цифровое Меню - Экран 1</title>
+    <title>Цифровое Меню - Экран 2</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Arial', sans-serif; overflow: hidden; }
         body, html { width: 100vw; height: 100vh; background-color: #fff; color: #2c3e72; }
@@ -54,7 +54,6 @@
             padding-right: 15px;
         }
         
-        /* Цена крупная, Объем мелкий */
         .item-prices-block { display: flex; justify-content: flex-end; align-items: flex-start; padding-top: 2px; }
         .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
         .price-single .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
@@ -65,7 +64,6 @@
         .no-category-item .price-single .vol-label { font-size: 13px; font-weight: bold; color: #2c3e72; }
         .no-category-item .item-description { font-size: 14px; margin-top: 6px; }
 
-        /* Фиксация добавок в нижней части левой колонки */
         .addons-block {
             position: absolute;
             bottom: 40px;
@@ -96,10 +94,7 @@
     </div>
 
     <script>
-        const SCREEN_NAME = 'screen1'; 
-        const GOOGLE_CSV_URL = SCREEN_NAME === 'screen1' 
-            ? 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=0&single=true&output=csv' 
-            : 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=212811701&single=true&output=csv';
+        const GOOGLE_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuDg_XrAX0YMtbUpwkVOJ3aBWOCKmqELqfqpLB3tcpmSgq5IEKqmZPaEvPma-ZUHGPILwitDcS4nx1/pub?gid=212811701&single=true&output=csv';
 
         function openFullscreen() {
             var elem = document.documentElement;
@@ -108,81 +103,36 @@
             document.getElementById('hint').style.display = 'none';
         }
 
-        function loadMedia() {
-            const video = document.getElementById('menu-video');
-            const img = document.getElementById('menu-img');
-            const timestamp = new Date().getTime();
-            const basePath = SCREEN_NAME === 'screen1' ? 'screen1/menu_media' : 'screen2/menu_media';
-
-            const testVideo = document.createElement('video');
-            testVideo.src = `${basePath}.mp4?t=${timestamp}`;
-            testVideo.oncanplaythrough = function() {
-                video.src = testVideo.src; video.style.display = 'block'; img.style.display = 'none';
-            };
-            testVideo.onerror = function() {
-                const testGif = new Image();
-                testGif.src = `${basePath}.gif?t=${timestamp}`;
-                testGif.onload = function() {
-                    img.src = testGif.src; img.style.display = 'block'; video.style.display = 'none';
-                };
-                testGif.onerror = function() {
-                    img.src = `${basePath}.png?t=${timestamp}`;
-                    img.style.display = 'block'; video.style.display = 'none';
-                };
-            };
-        }
-
         function parseCSV(text) {
-            const lines = text.split('\n').map(line => {
-                const result = [];
-                let current = '';
-                let inQuotes = false;
-                for (let i = 0; i < line.length; i++) {
-                    const char = line[i];
-                    if (char === '"') { inQuotes = !inQuotes; }
-                    else if (char === ',' && !inQuotes) { result.push(current); current = ''; }
-                    else { current += char; }
-                }
-                result.push(current);
-                return result;
-            });
-            
+            const lines = text.split('\n');
             lines.shift(); 
             const categories = {};
-            let currentCategory = 'empty'; // Переменная для хранения текущей категории при разборе строк
+            let currentCategory = 'empty';
             
-            lines.forEach(cols => {
-                if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
-                    let cat = cols[0].trim();
-                    
-                    // Если ячейка категории заполнена, обновляем текущую категорию
-                    if (cat !== '') {
-                        currentCategory = cat;
-                    }
-                    
-                    const name = cols[1].trim();
-                    let volume = cols[2].trim();
-                    const price = cols[3].trim();
-                    const description = cols[4] ? cols[4].trim() : '';
-
-                    if (volume !== '' && /^[0-9.,]+$/.test(volume)) {
-                        volume = volume + ' мл';
-                    }
-
-                    if (!categories[currentCategory]) categories[currentCategory] = {};
-                    
-                    if (categories[currentCategory][name]) {
-                        categories[currentCategory][name].prices.push({ volume, price });
-                        if (description !== '' && categories[currentCategory][name].description === '') {
-                            categories[currentCategory][name].description = description;
-                        }
-                    } else {
-                        categories[currentCategory][name] = {
-                            description: description,
-                            prices: [{ volume, price }]
-                        };
-                    }
+            lines.forEach(line => {
+                const cols = []; let cur = ''; let inQuotes = false;
+                for (let char of line) {
+                    if (char === '"') inQuotes = !inQuotes;
+                    else if (char === ',' && !inQuotes) { cols.push(cur.trim()); cur = ''; }
+                    else cur += char;
                 }
+                cols.push(cur.trim());
+                if (cols.length < 4 || !cols[1]) return;
+
+                let cat = cols[0].trim();
+                let name = cols[1].trim();
+                let volume = cols[2] ? cols[2].trim() : '';
+                let price = cols[3].trim();
+                let description = cols[4] ? cols[4].trim() : '';
+
+                if (cat !== '') currentCategory = cat;
+
+                if (!categories[currentCategory]) categories[currentCategory] = {};
+                
+                if (!categories[currentCategory][name]) {
+                    categories[currentCategory][name] = { description: description, prices: [] };
+                }
+                categories[currentCategory][name].prices.push({ volume, price });
             });
             return categories;
         }
@@ -193,20 +143,11 @@
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
 
             let addonsHtml = '';
-            // Ищем ключ "добавки" без привязки к регистру букв
             const addonsKey = Object.keys(categories).find(k => k.toLowerCase() === 'добавки');
-            
             if (addonsKey) {
-                addonsHtml = `<div class="addons-block">`;
-                addonsHtml += `<h2 class="category-title">${addonsKey}</h2>`;
+                addonsHtml = `<div class="addons-block"><h2 class="category-title">${addonsKey}</h2>`;
                 for (const itemName in categories[addonsKey]) {
-                    const itemData = categories[addonsKey][itemName];
-                    const price = itemData.prices[0] ? itemData.prices[0].price : '';
-                    addonsHtml += `
-                        <div class="addon-item">
-                            <span class="item-name">${itemName}</span>
-                            <span class="addon-price">${price}</span>
-                        </div>`;
+                    addonsHtml += `<div class="addon-item"><span class="item-name">${itemName}</span><span class="addon-price">${categories[addonsKey][itemName].prices[0].price}</span></div>`;
                 }
                 addonsHtml += `</div>`;
                 delete categories[addonsKey];
@@ -217,59 +158,35 @@
 
             catNames.forEach((catName, index) => {
                 let html = `<div class="category-block">`;
-                
-                if (catName !== 'empty') {
-                    html += `
-                        <div class="category-header">
-                            <h2 class="category-title">${catName}</h2>
-                        </div>`;
-                }
+                if (catName !== 'empty') html += `<div class="category-header"><h2 class="category-title">${catName}</h2></div>`;
 
                 for (const itemName in categories[catName]) {
                     const itemData = categories[catName][itemName];
                     const itemClass = catName === 'empty' ? 'menu-item no-category-item' : 'menu-item';
                     
-                    html += `<div class="${itemClass}">`;
-                    html += `
+                    html += `<div class="${itemClass}">
                         <div class="item-name-block">
-                            <span class="item-name">${itemName}</span>`;
-                    if (itemData.description && itemData.description !== '') {
-                        html += `<div class="item-description">${itemData.description}</div>`;
-                    }
-                    html += `</div>`;
-                    
-                    html += `<div class="item-prices-block">`;
+                            <span class="item-name">${itemName}</span>
+                            ${itemData.description ? `<div class="item-description">${itemData.description}</div>` : ''}
+                        </div>
+                        <div class="item-prices-block">`;
                     itemData.prices.forEach(p => {
-                        const volLabel = `<span class="vol-label">${p.volume}</span>`;
-                        html += `<span class="price-single">${volLabel}${p.price}</span>`;
+                        // Логика: если объем есть, добавляем 'мл' только если это число
+                        const displayVol = (p.volume && /^[0-9.,]+$/.test(p.volume)) ? p.volume + ' мл' : p.volume;
+                        html += `<span class="price-single">${displayVol ? `<span class="vol-label">${displayVol}</span>` : ''}${p.price}</span>`;
                     });
                     html += `</div></div>`;
                 }
                 html += `</div>`;
 
-                if (index < half) { leftCol.innerHTML += html; } 
-                else { rightCol.innerHTML += html; }
+                if (index < half) leftCol.innerHTML += html; else rightCol.innerHTML += html;
             });
-
-            if (addonsHtml !== '') {
-                leftCol.innerHTML += addonsHtml;
-            }
+            if (addonsHtml !== '') leftCol.innerHTML += addonsHtml;
         }
 
-        function updateMenuData() {
-            fetch(GOOGLE_CSV_URL, { cache: 'no-store' })
-                .then(res => res.text())
-                .then(text => {
-                    const data = parseCSV(text);
-                    renderMenu(data);
-                })
-                .catch(err => console.log('Ошибка связи с Google Sheets'));
-        }
-
-        loadMedia();
-        updateMenuData();
-        setInterval(updateMenuData, 2 * 60 * 1000); 
-        setInterval(loadMedia, 30 * 60 * 1000);   
+        fetch(GOOGLE_CSV_URL, { cache: 'no-store' })
+            .then(res => res.text())
+            .then(text => renderMenu(parseCSV(text)));
     </script>
 </body>
 </html>
