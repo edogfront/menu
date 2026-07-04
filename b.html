@@ -58,12 +58,11 @@
         .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
         .price-single .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
 
-        /* Позиции без категории: размер как у заголовка (28px), но структура меню сохранена */
-        .no-category-item { margin-top: 10px; margin-bottom: 30px; }
-        .no-category-item .item-name { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
-        .no-category-item .price-single { font-size: 28px; width: 85px; }
-        .no-category-item .price-single .vol-label { font-size: 13px; font-weight: bold; color: #2c3e72; }
-        .no-category-item .item-description { font-size: 14px; margin-top: 6px; }
+        /* Специальный стиль для Фраппучино: формат заголовка (28px) с сохранением структуры меню */
+        .frappuccino-item { margin-top: 15px; margin-bottom: 35px; }
+        .frappuccino-item .item-name { font-size: 28px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+        .frappuccino-item .price-single { font-size: 28px; width: 85px; }
+        .frappuccino-item .price-single .vol-label { font-size: 13px; font-weight: bold; color: #2c3e72; }
 
         .addons-block {
             position: absolute;
@@ -122,7 +121,7 @@
                 testGif.onload = function() {
                     img.src = testGif.src; img.style.display = 'block'; video.style.display = 'none';
                 };
-                testGif.onerror = function() {
+                testVideo.onerror = function() {
                     img.src = `${basePath}.png?t=${timestamp}`;
                     img.style.display = 'block'; video.style.display = 'none';
                 };
@@ -161,35 +160,38 @@
             lines.forEach(cols => {
                 if (cols.length >= 4 && cols[1] && cols[1].trim() !== '') {
                     let cat = cols[0].trim();
+                    const name = cols[1].trim();
                     
-                    // Если ячейка категории заполнена — переключаем текущую категорию
                     if (cat !== '') {
                         currentCategory = cat;
-                    } else if (lines.indexOf(cols) === 0 || cols[1].toLowerCase().includes('фраппучино')) {
-                        // Если это Фраппучино или первая строка без категории — принудительно изолируем в 'empty'
-                        currentCategory = 'empty';
                     }
                     
-                    const name = cols[1].trim();
+                    // Изолируем Фраппучино в собственную категорию, чтобы оно не прилипало к Смузи
+                    let itemCategory = currentCategory;
+                    if (name.toLowerCase().includes('фраппучино')) {
+                        itemCategory = 'FRAППУЧИНО';
+                    }
+                    
                     let volume = cols[2].trim();
                     const price = cols[3].trim();
                     const description = cols[4] ? cols[4].trim() : '';
 
                     if (volume !== '') {
                         if (/^[0-9.,]+$/.test(volume)) {
-                            volume = volume + ' г';
+                            // Фраппучино маркируем как напиток (мл), остальное — как еду (г)
+                            volume = name.toLowerCase().includes('фраппучино') ? volume + ' мл' : volume + ' г';
                         }
                     }
 
-                    if (!categories[currentCategory]) categories[currentCategory] = {};
+                    if (!categories[itemCategory]) categories[itemCategory] = {};
                     
-                    if (categories[currentCategory][name]) {
-                        categories[currentCategory][name].prices.push({ volume, price });
-                        if (description !== '' && categories[currentCategory][name].description === '') {
-                            categories[currentCategory][name].description = description;
+                    if (categories[itemCategory][name]) {
+                        categories[itemCategory][name].prices.push({ volume, price });
+                        if (description !== '' && categories[itemCategory][name].description === '') {
+                            categories[itemCategory][name].description = description;
                         }
                     } else {
-                        categories[currentCategory][name] = {
+                        categories[itemCategory][name] = {
                             description: description,
                             prices: [{ volume, price }]
                         };
@@ -204,13 +206,13 @@
             const rightCol = document.getElementById('right-column');
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
 
-            // Фраппучино и акционные товары выводятся в самом верху левой колонки крупным шрифтом (размер заголовка)
-            if (categories['empty']) {
+            // 1. Извлекаем и выводим Фраппучино на самый верх левой колонки в формате крупного заголовка-строки
+            if (categories['FRAППУЧИНО']) {
                 let html = `<div class="category-block">`;
-                for (const itemName in categories['empty']) {
-                    const itemData = categories['empty'][itemName];
+                for (const itemName in categories['FRAППУЧИНО']) {
+                    const itemData = categories['FRAППУЧИНО'][itemName];
                     html += `
-                        <div class="menu-item no-category-item">
+                        <div class="menu-item frappuccino-item">
                             <div class="item-name-block">
                                 <span class="item-name">${itemName}</span>`;
                     if (itemData.description && itemData.description !== '') {
@@ -226,9 +228,10 @@
                 }
                 html += `</div>`;
                 leftCol.innerHTML += html;
-                delete categories['empty'];
+                delete categories['FRAППУЧИНО'];
             }
 
+            // 2. Извлекаем блок добавок вниз левой колонки
             let addonsHtml = '';
             const addonsKey = Object.keys(categories).find(k => k.toLowerCase() === 'добавки');
             
@@ -248,15 +251,18 @@
                 delete categories[addonsKey];
             }
 
+            // 3. Распределяем остальные стандартные категории по двум колонкам
             const catNames = Object.keys(categories);
             const half = Math.ceil(catNames.length / 2);
 
             catNames.forEach((catName, index) => {
                 let html = `<div class="category-block">`;
-                html += `
-                    <div class="category-header">
-                        <h2 class="category-title">${catName}</h2>
-                    </div>`;
+                if (catName !== 'empty') {
+                    html += `
+                        <div class="category-header">
+                            <h2 class="category-title">${catName}</h2>
+                        </div>`;
+                }
 
                 for (const itemName in categories[catName]) {
                     const itemData = categories[catName][itemName];
