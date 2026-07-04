@@ -58,7 +58,8 @@
         .price-single { display: block; width: 70px; text-align: right; margin-left: 15px; font-size: 24px; font-weight: 900; color: #2c3e72; line-height: 1; }
         .price-single .vol-label { display: block; font-size: 12px; color: #888; font-weight: normal; margin-bottom: 4px; letter-spacing: 0.5px; }
 
-        .no-category-item { margin-top: 25px; margin-bottom: 25px; }
+        /* Стиль для позиций без категории (акционных) */
+        .no-category-item { margin-top: 10px; margin-bottom: 25px; }
         .no-category-item .item-name { font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; }
         .no-category-item .price-single { font-size: 28px; width: 85px; }
         .no-category-item .price-single .vol-label { font-size: 13px; font-weight: bold; color: #2c3e72; }
@@ -128,7 +129,6 @@
             };
         }
 
-        // Защищенный парсер CSV, устойчивый к переносам строк внутри ячеек
         function parseCSV(text) {
             const lines = [];
             let row = [""];
@@ -153,7 +153,7 @@
             }
             if (row.length > 1 || row[0] !== '') { lines.push(row); }
 
-            lines.shift(); // Удаляем шапку таблицы
+            lines.shift(); 
             
             const categories = {};
             let currentCategory = 'empty';
@@ -170,7 +170,6 @@
                     const price = cols[3].trim();
                     const description = cols[4] ? cols[4].trim() : '';
 
-                    // Если объем числовой — добавляем "г", если там уже есть "мл" или пусто — оставляем как есть
                     if (volume !== '') {
                         if (/^[0-9.,]+$/.test(volume)) {
                             volume = volume + ' г';
@@ -200,6 +199,31 @@
             const rightCol = document.getElementById('right-column');
             leftCol.innerHTML = ''; rightCol.innerHTML = '';
 
+            // Вывод позиций без категории (Фраппучино) наверх левой колонки
+            if (categories['empty']) {
+                let html = `<div class="category-block">`;
+                for (const itemName in categories['empty']) {
+                    const itemData = categories['empty'][itemName];
+                    html += `
+                        <div class="menu-item no-category-item">
+                            <div class="item-name-block">
+                                <span class="item-name">${itemName}</span>`;
+                    if (itemData.description && itemData.description !== '') {
+                        html += `<div class="item-description">${itemData.description}</div>`;
+                    }
+                    html += `</div>
+                            <div class="item-prices-block">`;
+                    itemData.prices.forEach(p => {
+                        const volLabel = `<span class="vol-label">${p.volume}</span>`;
+                        html += `<span class="price-single">${volLabel}${p.price}</span>`;
+                    });
+                    html += `</div></div>`;
+                }
+                html += `</div>`;
+                leftCol.innerHTML += html;
+                delete categories['empty'];
+            }
+
             let addonsHtml = '';
             const addonsKey = Object.keys(categories).find(k => k.toLowerCase() === 'добавки');
             
@@ -224,27 +248,22 @@
 
             catNames.forEach((catName, index) => {
                 let html = `<div class="category-block">`;
-                if (catName !== 'empty') {
-                    html += `
-                        <div class="category-header">
-                            <h2 class="category-title">${catName}</h2>
-                        </div>`;
-                }
+                html += `
+                    <div class="category-header">
+                        <h2 class="category-title">${catName}</h2>
+                    </div>`;
 
                 for (const itemName in categories[catName]) {
                     const itemData = categories[catName][itemName];
-                    const itemClass = catName === 'empty' ? 'menu-item no-category-item' : 'menu-item';
-                    
-                    html += `<div class="${itemClass}">`;
                     html += `
-                        <div class="item-name-block">
-                            <span class="item-name">${itemName}</span>`;
+                        <div class="menu-item">
+                            <div class="item-name-block">
+                                <span class="item-name">${itemName}</span>`;
                     if (itemData.description && itemData.description !== '') {
                         html += `<div class="item-description">${itemData.description}</div>`;
                     }
-                    html += `</div>`;
-                    
-                    html += `<div class="item-prices-block">`;
+                    html += `</div>
+                            <div class="item-prices-block">`;
                     itemData.prices.forEach(p => {
                         const volLabel = `<span class="vol-label">${p.volume}</span>`;
                         html += `<span class="price-single">${volLabel}${p.price}</span>`;
