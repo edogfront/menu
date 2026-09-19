@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Меню — Холодное</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="hint">Нажмите OK для во весь экран</div>
+
+<div class="stage">
+
+  <header class="head">
+    <div class="head__text">
+      <span class="head__shop">[Название кофейни]</span>
+      <h1 class="head__title">Холодное</h1>
+      <span class="head__kinds">Лимонады · Смузи · Коктейли</span>
+    </div>
+
+    <div class="media">
+      <video autoplay muted loop playsinline preload="metadata" poster="media/cold-poster.jpg">
+        <source src="media/cold.mp4" type="video/mp4">
+      </video>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- ============ Колонка 1: холодный кофе, лимонады, матча ============ -->
+    <div class="col col--1">
+
+      <div class="cat">
+        <h2 class="cat__name">Холодный кофе</h2>
+        <span class="cat__spacer"></span>
+        <span class="sizes__label">350 МЛ</span>
+        <span class="sizes__label">500 МЛ</span>
+      </div>
+
+      <div class="rows">
+        <div class="row">
+          <span class="row__name">Айс Латте</span>
+          <span class="row__price row__price--col">300</span>
+          <span class="row__price row__price--col">350</span>
+        </div>
+        <div class="row">
+          <span class="row__name">Айс Берри</span>
+          <span class="row__price row__price--col row__price--none">—</span>
+          <span class="row__price row__price--col">300</span>
+        </div>
+        <div class="row">
+          <span class="row__name">Бамбл</span>
+          <span class="row__price row__price--col row__price--none">—</span>
+          <span class="row__price row__price--col">300</span>
+        </div>
+        <div class="row">
+          <span class="row__name">Эспрессо тоник</span>
+          <span class="row__price row__price--col row__price--none">—</span>
+          <span class="row__price row__price--col">350</span>
+        </div>
+      </div>
+
+      <div class="cat">
+        <h2 class="cat__name">Лимонады</h2>
+        <span class="cat__note">500 МЛ</span>
+      </div>
+
+      <div class="rows">
+        <div class="row"><span class="row__name">Апельсин-лимон</span><span class="row__price">290</span></div>
+        <div class="row"><span class="row__name">Лаванда-смородина</span><span class="row__price">290</span></div>
+        <div class="row"><span class="row__name">Грейпфрут-бузина</span><span class="row__price">290</span></div>
+        <div class="row"><span class="row__name">Мохито</span><span class="row__price">300</span></div>
+        <div class="row"><span class="row__name">Манго-маракуйя</span><span class="row__price">290</span></div>
+      </div>
+
+    </div>
+
+    <!-- ============ Колонка 2: матча и молочные коктейли ============ -->
+    <div class="col col--2">
+
+      <div class="cat">
+        <h2 class="cat__name">Матча</h2>
+        <span class="cat__note">350 МЛ</span>
+      </div>
+
+      <div class="rows">
+        <div class="row"><span class="row__name">Айс латте матча</span><span class="row__price">350</span></div>
+        <div class="row"><span class="row__name">Матча тоник</span><span class="row__price">350</span></div>
+      </div>
+
+      <div class="cat">
+        <h2 class="cat__name">Молочные коктейли</h2>
+        <span class="cat__note">500 МЛ</span>
+      </div>
+
+      <div class="rows">
+        <div class="row"><span class="row__name">Классический</span><span class="row__price">290</span></div>
+        <div class="row"><span class="row__name">Клубничный</span><span class="row__price">290</span></div>
+        <div class="row"><span class="row__name">Орео</span><span class="row__price">350</span></div>
+        <div class="row"><span class="row__name">Сникерс</span><span class="row__price">350</span></div>
+      </div>
+
+    </div>
+
+    <!-- ============ Колонка 3: смузи и фраппучино ============ -->
+    <div class="col col--3">
+
+      <div class="cat">
+        <h2 class="cat__name">Смузи</h2>
+        <span class="cat__spacer"></span>
+        <span class="sizes__label">350 МЛ</span>
+        <span class="sizes__label">500 МЛ</span>
+      </div>
+
+      <div class="dish">
+        <div class="dish__top">
+          <span class="dish__name">Фрутелла</span>
+          <span class="row__price row__price--col">350</span>
+          <span class="row__price row__price--col">400</span>
+        </div>
+        <p class="dish__desc">Клубника, яблоко, банан, апельсиновый сок, сироп маракуйя</p>
+      </div>
+
+      <div class="dish">
+        <div class="dish__top">
+          <span class="dish__name">Ягодный</span>
+          <span class="row__price row__price--col">350</span>
+          <span class="row__price row__price--col">400</span>
+        </div>
+        <p class="dish__desc">Клубника, смородина, банан, газированная вода, сироп вишня</p>
+      </div>
+
+      <div class="dish">
+        <div class="dish__top">
+          <span class="dish__name">Тропический</span>
+          <span class="row__price row__price--col">350</span>
+          <span class="row__price row__price--col">400</span>
+        </div>
+        <p class="dish__desc">Банан, апельсин, манговое пюре, кокосовое молоко</p>
+      </div>
+
+      <div class="rule"></div>
+
+      <div class="cat">
+        <h2 class="cat__name">Фраппучино</h2>
+        <span class="cat__spacer"></span>
+        <span class="row__price row__price--col">350</span>
+        <span class="row__price row__price--col">400</span>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

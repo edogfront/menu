@@ -1,0 +1,370 @@
+/* ==========================================================================
+   Меню на экраны кофейни
+   Макет рисуется в фиксированных 1920x1080 и масштабируется под экран
+   целиком (app.js), поэтому пропорции не плывут на нестандартных панелях.
+   ========================================================================== */
+
+/* --- Шрифты. Лежат в репозитории: внешний CDN тут лишняя точка отказа. ---- */
+
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/unbounded-cyrillic-600-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/unbounded-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: url('fonts/unbounded-cyrillic-700-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: url('fonts/unbounded-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('fonts/golos-text-cyrillic-400-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('fonts/golos-text-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('fonts/golos-text-cyrillic-500-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('fonts/golos-text-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/golos-text-cyrillic-600-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/golos-text-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-cyrillic-500-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-cyrillic-600-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+
+/* --- Палитра и размеры. Меняются тут, действуют везде. ------------------- */
+
+:root {
+  --ink:      #0f0e0d;   /* фон */
+  --ivory:    #f2eee7;   /* основной текст */
+  --muted:    #9a9286;   /* составы, подписи, объёмы */
+  --accent:   #f05a28;   /* только цены и один акцент в шапке */
+  --hair:     rgba(242, 238, 231, 0.18);  /* разделители колонок */
+  --hair-soft:rgba(242, 238, 231, 0.10);  /* разделители строк */
+
+  --pad-x: 64px;
+  --pad-y: 56px;
+}
+
+/* --- Сцена --------------------------------------------------------------- */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--ink);
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Golos Text', system-ui, sans-serif;
+  color: var(--ivory);
+  -webkit-font-smoothing: antialiased;
+  cursor: none;               /* на экране курсор не нужен */
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--scale, 1));
+  transform-origin: center center;
+  padding: var(--pad-y) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* --- Шапка --------------------------------------------------------------- */
+
+.head {
+  display: flex;
+  align-items: stretch;
+  gap: 48px;
+  height: 200px;
+  flex-shrink: 0;
+}
+
+.head__text {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 6px;
+}
+
+.head__shop {
+  font-family: 'Plex Mono', monospace;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.head__title {
+  margin: 0;
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 700;
+  font-size: 78px;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+
+.head__kinds {
+  font-family: 'Plex Mono', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Медиаблок в обрез по верхнему и правому краю */
+.media {
+  position: relative;
+  width: 584px;
+  height: 256px;
+  margin: calc(var(--pad-y) * -1) calc(var(--pad-x) * -1) 0 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: #1a1715;
+}
+
+.media video,
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* --- Сетка колонок ------------------------------------------------------- */
+
+.grid {
+  flex-grow: 1;
+  display: flex;
+  margin-top: 40px;
+  padding-top: 34px;
+  border-top: 1px solid var(--hair);
+}
+
+.col { box-sizing: border-box; }
+.col--1 { width: 566px; padding-right: 40px; }
+.col--2 { width: 574px; padding: 0 40px; border-left: 1px solid var(--hair); }
+.col--3 { flex-grow: 1; padding-left: 40px; border-left: 1px solid var(--hair); }
+
+/* --- Заголовок раздела --------------------------------------------------- */
+
+.cat {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.cat + .cat,
+.rows + .cat { margin-top: 30px; }
+
+.cat__name {
+  margin: 0;
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cat__note {
+  font-family: 'Plex Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.cat__spacer { flex-grow: 1; }
+
+/* --- Строка позиции ------------------------------------------------------ */
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.row__name { flex-grow: 1; font-size: 26px; }
+
+.row__vol {
+  font-family: 'Plex Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.row__price {
+  font-family: 'Plex Mono', monospace;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Два столбца цен для позиций с двумя объёмами */
+.row__price--col,
+.sizes__label {
+  width: 88px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.sizes__label {
+  font-family: 'Plex Mono', monospace;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.row__price--none { color: rgba(154, 146, 134, 0.55); }
+
+/* --- Позиция с составом (хот-доги, смузи) -------------------------------- */
+
+.dish {
+  padding: 12px 0;
+  border-top: 1px solid var(--hair-soft);
+}
+
+.dish:last-child { border-bottom: 1px solid var(--hair-soft); }
+
+.dish__top {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.dish__name { flex-grow: 1; font-size: 28px; font-weight: 600; }
+
+.dish__desc {
+  margin: 5px 0 0;
+  font-size: 19px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.rule {
+  height: 1px;
+  background: var(--hair-soft);
+  margin: 18px 0;
+}
+
+/* --- Подсказка про полный экран, гаснет после клика ---------------------- */
+
+.hint {
+  position: fixed;
+  left: 12px;
+  bottom: 10px;
+  z-index: 99;
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  color: rgba(242, 238, 231, 0.25);
+}
