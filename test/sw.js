@@ -7,7 +7,7 @@
    цен доезжают к следующей перезагрузке.
    ========================================================================== */
 
-var CACHE = 'menu-v1';
+var CACHE = 'menu-v2';
 
 /* Критичное — то, без чего экран не покажет меню. ~100 КБ. */
 var CORE = [
@@ -29,6 +29,7 @@ var CORE = [
   'fonts/ibm-plex-mono-latin-500-normal.woff2',
   'fonts/ibm-plex-mono-cyrillic-600-normal.woff2',
   'fonts/ibm-plex-mono-latin-600-normal.woff2',
+  'media/logo.png',
   'media/hot-poster.jpg',
   'media/cold-poster.jpg'
 ];

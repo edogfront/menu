@@ -126,7 +126,8 @@
 :root {
   --ink:      #0f0e0d;   /* фон */
   --ivory:    #f2eee7;   /* основной текст */
-  --muted:    #9a9286;   /* составы, подписи, объёмы */
+  --muted:    #9a9286;   /* составы блюд */
+  --label:    #cbc2b4;   /* объёмы и подписи колонок — читаются издалека */
   --accent:   #f05a28;   /* только цены и один акцент в шапке */
   --hair:     rgba(242, 238, 231, 0.18);  /* разделители колонок */
   --hair-soft:rgba(242, 238, 231, 0.10);  /* разделители строк */
@@ -187,13 +188,10 @@ body {
   padding-bottom: 6px;
 }
 
-.head__shop {
-  font-family: 'Plex Mono', monospace;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--muted);
+.head__logo {
+  display: block;
+  height: 56px;
+  width: auto;
 }
 
 .head__title {
@@ -214,15 +212,20 @@ body {
   color: var(--accent);
 }
 
-/* Медиаблок в обрез по верхнему и правому краю */
+/* Медиаблок в обрез по верхнему и правому краю.
+   Широкий формат: высота прежняя, длина — во всё свободное место шапки. */
 .media {
   position: relative;
-  width: 584px;
+  width: 1272px;
   height: 256px;
   margin: calc(var(--pad-y) * -1) calc(var(--pad-x) * -1) 0 0;
   flex-shrink: 0;
   overflow: hidden;
-  background: #1a1715;
+  background: var(--ink);
+  /* левый край растворяется в фоне: полоса читается широким экраном,
+     а не прямоугольной вставкой. Без поддержки маски — обычный край. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 240px);
+  mask-image: linear-gradient(to right, transparent 0, #000 240px);
 }
 
 .media video,
@@ -250,10 +253,12 @@ body {
 
 /* --- Заголовок раздела --------------------------------------------------- */
 
+/* gap здесь обязан совпадать с .row, иначе подписи объёмов
+   уезжают относительно колонок с ценами */
 .cat {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: 16px;
   margin-bottom: 14px;
 }
 
@@ -272,10 +277,10 @@ body {
 
 .cat__note {
   font-family: 'Plex Mono', monospace;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
-  letter-spacing: 0.18em;
-  color: var(--muted);
+  letter-spacing: 0.16em;
+  color: var(--label);
   white-space: nowrap;
 }
 
@@ -294,9 +299,9 @@ body {
 
 .row__vol {
   font-family: 'Plex Mono', monospace;
-  font-size: 14px;
+  font-size: 15px;
   letter-spacing: 0.12em;
-  color: var(--muted);
+  color: var(--label);
   white-space: nowrap;
 }
 
@@ -309,7 +314,9 @@ body {
   white-space: nowrap;
 }
 
-/* Два столбца цен для позиций с двумя объёмами */
+/* Два столбца цен для позиций с двумя объёмами.
+   Подписи объёмов живут отдельной строкой над ценами, а не в заголовке:
+   заголовок не сжимается и выдавливал бы их за край колонки. */
 .row__price--col,
 .sizes__label {
   width: 88px;
@@ -317,12 +324,21 @@ body {
   flex-shrink: 0;
 }
 
+.sizes {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding-bottom: 2px;
+}
+
+.sizes__spacer { flex-grow: 1; min-width: 0; }
+
 .sizes__label {
   font-family: 'Plex Mono', monospace;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.12em;
-  color: var(--muted);
+  color: var(--label);
 }
 
 .row__price--none { color: rgba(154, 146, 134, 0.55); }
