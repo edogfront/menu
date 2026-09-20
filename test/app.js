@@ -103,7 +103,13 @@
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js').catch(function () {
+      navigator.serviceWorker.register('sw.js').then(function (reg) {
+        // GitHub Pages отдаёт sw.js с десятиминутным кэшем, поэтому сам
+        // браузер замечает новую версию с задержкой. Просим проверить явно —
+        // сразу и потом по таймеру вместе с проверкой меню.
+        reg.update();
+        setInterval(function () { reg.update(); }, CHECK_EVERY);
+      }).catch(function () {
         // не смертельно: страница просто не будет работать офлайн
       });
     });
