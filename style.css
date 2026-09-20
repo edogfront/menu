@@ -1,0 +1,457 @@
+/* ==========================================================================
+   Меню на экраны кофейни
+   Макет рисуется в фиксированных 1920x1080 и масштабируется под экран
+   целиком (app.js), поэтому пропорции не плывут на нестандартных панелях.
+   ========================================================================== */
+
+/* --- Шрифты. Лежат в репозитории: внешний CDN тут лишняя точка отказа. ---- */
+
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/unbounded-cyrillic-600-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/unbounded-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: url('fonts/unbounded-cyrillic-700-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 700;
+  font-display: block;
+  src: url('fonts/unbounded-latin-700-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('fonts/golos-text-cyrillic-400-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('fonts/golos-text-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('fonts/golos-text-cyrillic-500-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('fonts/golos-text-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/golos-text-cyrillic-600-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Golos Text';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/golos-text-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-cyrillic-400-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-cyrillic-500-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-cyrillic-600-normal.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: block;
+  src: url('fonts/ibm-plex-mono-latin-600-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+2000-206F, U+2116, U+20BD;
+}
+
+/* --- Палитра и размеры. Меняются тут, действуют везде. ------------------- */
+
+:root {
+  --ink:      #0f0e0d;   /* фон */
+  --ivory:    #f2eee7;   /* основной текст */
+  --muted:    #9a9286;   /* составы блюд */
+  --label:    #ded5c7;   /* объёмы и подписи колонок — читаются издалека */
+  --accent:   #f05a28;   /* только цены и один акцент в шапке */
+  --hair:     rgba(242, 238, 231, 0.18);  /* разделители колонок */
+  --hair-soft:rgba(242, 238, 231, 0.10);  /* разделители строк */
+
+  --pad-x: 64px;
+  --pad-y: 56px;
+}
+
+/* --- Сцена --------------------------------------------------------------- */
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--ink);
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Golos Text', system-ui, sans-serif;
+  color: var(--ivory);
+  -webkit-font-smoothing: antialiased;
+  cursor: none;               /* на экране курсор не нужен */
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1920px;
+  height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--scale, 1));
+  transform-origin: center center;
+  padding: var(--pad-y) var(--pad-x);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* --- Шапка --------------------------------------------------------------- */
+
+.head {
+  display: flex;
+  align-items: stretch;
+  gap: 48px;
+  height: 200px;
+  flex-shrink: 0;
+}
+
+.head__text {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 6px;
+}
+
+/* Заголовок экрана и перечень категорий — один блок: строка «кофе · чай»
+   описывает именно этот экран, а не бренд. Логотип тогда стоит отдельно
+   сверху, и шапка перестаёт быть стопкой из трёх слипшихся строк. */
+.head__section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.head__logo {
+  display: block;
+  height: 112px;   /* ровно натуральная высота файла — рисуется без пересчёта */
+  width: auto;
+  /* Шапка — колоночный флекс, а он по умолчанию растягивает потомков
+     на всю ширину. Без этой строки логотип разъезжается по горизонтали. */
+  align-self: flex-start;
+}
+
+/* Название экрана намеренно тихое. Логотип уже набран броским
+   начертанием, и второй такой же рядом делает угол пёстрым. */
+.head__title {
+  margin: 0;
+  font-family: 'Plex Mono', monospace;
+  font-weight: 400;      /* крупнее прежнего, но тоньше: буквы не жирнеют */
+  font-size: 38px;
+  line-height: 1;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.head__kinds {
+  font-family: 'Plex Mono', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Медиаблок в обрез по верхнему и правому краю.
+   Широкий формат: высота прежняя, длина — во всё свободное место шапки. */
+.media {
+  position: relative;
+  width: 1272px;
+  height: 256px;
+  margin: calc(var(--pad-y) * -1) calc(var(--pad-x) * -1) 0 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: var(--ink);
+  /* левый край растворяется в фоне: полоса читается широким экраном,
+     а не прямоугольной вставкой. Без поддержки маски — обычный край. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 240px);
+  mask-image: linear-gradient(to right, transparent 0, #000 240px);
+}
+
+.media video,
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Постер — отдельный слой под видео, а не атрибут <video>.
+   Если ролик не проигрался, его прячут, и постер обязан остаться:
+   раньше он исчезал вместе с элементом и оставалась чернота. */
+.media__poster {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Полоса собрана из двух слоёв: неподвижный кадр во всю длину и поверх него
+   видео, растворяющееся к обоим краям. Движение остаётся в середине, края
+   спокойные. Кадр и ролик — одна сцена, поэтому стыка не видно.
+   Если маски не поддерживаются, видео просто перекроет кадр целиком. */
+.media video {
+  position: relative;
+  z-index: 1;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 26%, #000 74%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 26%, #000 74%, transparent 100%);
+}
+
+/* --- Сетка колонок ------------------------------------------------------- */
+
+.grid {
+  flex-grow: 1;
+  display: flex;
+  margin-top: 40px;   /* шапка + этот отступ = 240, высота колонок неизменна */
+  padding-top: 34px;
+  border-top: 1px solid var(--hair);
+}
+
+.col { box-sizing: border-box; display: flex; flex-direction: column; }
+
+/* Блок, который прижимается ко дну колонки и отбивается от основного меню.
+   Добавки — не часть ассортимента, а приписка к нему, и стоять должны отдельно. */
+.col__bottom {
+  margin-top: auto;
+  padding-top: 26px;
+  border-top: 1px solid var(--hair);
+}
+/* flex-shrink: 0 обязателен: иначе при нехватке места браузер поджимает
+   колонки, названия ломаются на две строки и колонка перестаёт помещаться. */
+.col--1 { width: 520px; padding-right: 40px; flex-shrink: 0; }
+.col--2 { width: 620px; padding: 0 40px; border-left: 1px solid var(--hair); flex-shrink: 0; }
+.col--3 { flex-grow: 1; padding-left: 40px; border-left: 1px solid var(--hair); }
+
+/* Еда среди напитков. Своя подложка вместо разделительной линии —
+   чтобы хот-доги читались как другая категория, а не ещё одна колонка чая. */
+.col--food {
+  border-left: none;
+  background: #1a1613;
+  border-radius: 22px;
+  padding: 24px 32px 24px 34px;
+  margin-left: 8px;
+}
+
+/* Внутри плашки строки чуть плотнее: её собственные поля добавляют высоту,
+   а колонка не должна становиться самой высокой и растягивать всю сетку. */
+.col--food .dish { padding: 10px 0; }
+
+/* --- Заголовок раздела --------------------------------------------------- */
+
+/* gap здесь обязан совпадать с .row, иначе подписи объёмов
+   уезжают относительно колонок с ценами */
+.cat {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.cat + .cat,
+.rows + .cat { margin-top: 34px; }
+
+.cat__name {
+  margin: 0;
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cat__spacer { flex-grow: 1; }
+
+/* --- Строка позиции ------------------------------------------------------ */
+
+.row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.row__name { flex-grow: 1; font-size: 26px; }
+
+/* Цена всегда занимает колонку фиксированной ширины: только так над ней
+   можно поставить подпись объёма и быть уверенным, что они совпадут. */
+
+.row__price {
+  font-family: 'Plex Mono', monospace;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  width: 88px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Два столбца цен для позиций с двумя объёмами.
+   Подписи объёмов живут отдельной строкой над ценами, а не в заголовке:
+   заголовок не сжимается и выдавливал бы их за край колонки. */
+.row__price--col,
+.sizes__label {
+  width: 88px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Шапка колонок. Оформлена намеренно иначе, чем цены: мельче, вразрядку,
+   без акцентного цвета и с отбивкой снизу — чтобы читалась как подпись
+   к столбцу, а не как ещё одно значение в нём. */
+.sizes {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding-bottom: 7px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--hair-soft);
+}
+
+.sizes__spacer { flex-grow: 1; min-width: 0; }
+
+.sizes__label {
+  font-family: 'Plex Mono', monospace;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  color: var(--label);
+  text-transform: uppercase;
+}
+
+.row__price--none { color: rgba(154, 146, 134, 0.55); }
+
+/* --- Позиция с составом (хот-доги, смузи) -------------------------------- */
+
+.dish {
+  padding: 12px 0;
+  border-top: 1px solid var(--hair-soft);
+}
+
+.dish:last-child { border-bottom: 1px solid var(--hair-soft); }
+
+.dish__top {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.dish__name { flex-grow: 1; font-size: 28px; font-weight: 600; }
+
+.dish__desc {
+  margin: 5px 0 0;
+  font-size: 19px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.rule {
+  height: 1px;
+  background: var(--hair-soft);
+  margin: 18px 0;
+}
+
+/* --- Подсказка про полный экран, гаснет после клика ---------------------- */
+
+.hint {
+  position: fixed;
+  left: 12px;
+  bottom: 10px;
+  z-index: 99;
+  font-family: system-ui, sans-serif;
+  font-size: 11px;
+  color: rgba(242, 238, 231, 0.25);
+}
