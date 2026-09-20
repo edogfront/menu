@@ -307,9 +307,25 @@ body {
   padding-top: 26px;
   border-top: 1px solid var(--hair);
 }
-.col--1 { width: 520px; padding-right: 40px; }
-.col--2 { width: 620px; padding: 0 40px; border-left: 1px solid var(--hair); }
+/* flex-shrink: 0 обязателен: иначе при нехватке места браузер поджимает
+   колонки, названия ломаются на две строки и колонка перестаёт помещаться. */
+.col--1 { width: 520px; padding-right: 40px; flex-shrink: 0; }
+.col--2 { width: 620px; padding: 0 40px; border-left: 1px solid var(--hair); flex-shrink: 0; }
 .col--3 { flex-grow: 1; padding-left: 40px; border-left: 1px solid var(--hair); }
+
+/* Еда среди напитков. Своя подложка вместо разделительной линии —
+   чтобы хот-доги читались как другая категория, а не ещё одна колонка чая. */
+.col--food {
+  border-left: none;
+  background: #1a1613;
+  border-radius: 22px;
+  padding: 24px 32px 24px 34px;
+  margin-left: 8px;
+}
+
+/* Внутри плашки строки чуть плотнее: её собственные поля добавляют высоту,
+   а колонка не должна становиться самой высокой и растягивать всю сетку. */
+.col--food .dish { padding: 10px 0; }
 
 /* --- Заголовок раздела --------------------------------------------------- */
 
