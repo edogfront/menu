@@ -7,7 +7,7 @@
    цен доезжают к следующей перезагрузке.
    ========================================================================== */
 
-var CACHE = 'menu-v7';
+var CACHE = 'menu-v8';
 
 /* Критичное — то, без чего экран не покажет меню. ~100 КБ. */
 var CORE = [
@@ -25,6 +25,8 @@ var CORE = [
   'fonts/golos-text-latin-500-normal.woff2',
   'fonts/golos-text-cyrillic-600-normal.woff2',
   'fonts/golos-text-latin-600-normal.woff2',
+  'fonts/ibm-plex-mono-cyrillic-400-normal.woff2',
+  'fonts/ibm-plex-mono-latin-400-normal.woff2',
   'fonts/ibm-plex-mono-cyrillic-500-normal.woff2',
   'fonts/ibm-plex-mono-latin-500-normal.woff2',
   'fonts/ibm-plex-mono-cyrillic-600-normal.woff2',
