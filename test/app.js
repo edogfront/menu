@@ -86,10 +86,24 @@
           try { sessionStorage.setItem('menuHash', fresh); } catch (e) {}
           return;
         }
-        if (known !== fresh) {
-          console.log('Меню обновилось, перезагружаю');
-          location.reload();
+        if (known === fresh) { return; }
+
+        // Новый хэш запоминаем ДО перезагрузки. Иначе после неё сравнение
+        // снова даст расхождение — и экран уйдёт в вечный цикл перезагрузок.
+        try { sessionStorage.setItem('menuHash', fresh); } catch (e) {}
+
+        // Страховка на случай, если запомнить не удалось (хранилище
+        // недоступно): чаще раза в минуту не перезагружаемся ни при чём.
+        var last = 0;
+        try { last = parseInt(sessionStorage.getItem('menuReloadAt'), 10) || 0; } catch (e) {}
+        if (Date.now() - last < 60000) {
+          console.log('Перезагрузка уже была только что, пропускаю');
+          return;
         }
+        try { sessionStorage.setItem('menuReloadAt', String(Date.now())); } catch (e) {}
+
+        console.log('Меню обновилось, перезагружаю');
+        location.reload();
       })
       .catch(function () {
         console.log('Сети нет, оставляю текущее меню');
