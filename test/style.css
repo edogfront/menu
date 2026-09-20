@@ -176,7 +176,7 @@ body {
   display: flex;
   align-items: stretch;
   gap: 48px;
-  height: 200px;
+  height: 232px;
   flex-shrink: 0;
 }
 
@@ -188,17 +188,29 @@ body {
   padding-bottom: 6px;
 }
 
+/* Заголовок экрана и перечень категорий — один блок: строка «кофе · чай»
+   описывает именно этот экран, а не бренд. Логотип тогда стоит отдельно
+   сверху, и шапка перестаёт быть стопкой из трёх слипшихся строк. */
+.head__section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 .head__logo {
   display: block;
-  height: 56px;
+  height: 112px;   /* ровно натуральная высота файла — рисуется без пересчёта */
   width: auto;
+  /* Шапка — колоночный флекс, а он по умолчанию растягивает потомков
+     на всю ширину. Без этой строки логотип разъезжается по горизонтали. */
+  align-self: flex-start;
 }
 
 .head__title {
   margin: 0;
   font-family: 'Unbounded', sans-serif;
   font-weight: 700;
-  font-size: 78px;
+  font-size: 50px;
   line-height: 0.92;
   letter-spacing: -0.02em;
 }
@@ -236,19 +248,47 @@ body {
   display: block;
 }
 
+/* Постер — отдельный слой под видео, а не атрибут <video>.
+   Если ролик не проигрался, его прячут, и постер обязан остаться:
+   раньше он исчезал вместе с элементом и оставалась чернота. */
+.media__poster {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Полоса собрана из двух слоёв: неподвижный кадр во всю длину и поверх него
+   видео, растворяющееся к обоим краям. Движение остаётся в середине, края
+   спокойные. Кадр и ролик — одна сцена, поэтому стыка не видно.
+   Если маски не поддерживаются, видео просто перекроет кадр целиком. */
+.media video {
+  position: relative;
+  z-index: 1;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 26%, #000 74%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 26%, #000 74%, transparent 100%);
+}
+
 /* --- Сетка колонок ------------------------------------------------------- */
 
 .grid {
   flex-grow: 1;
   display: flex;
-  margin-top: 40px;
+  margin-top: 8px;    /* отдано шапке; линия и высота колонок на прежнем месте */
   padding-top: 34px;
   border-top: 1px solid var(--hair);
 }
 
-.col { box-sizing: border-box; }
-.col--1 { width: 566px; padding-right: 40px; }
-.col--2 { width: 574px; padding: 0 40px; border-left: 1px solid var(--hair); }
+.col { box-sizing: border-box; display: flex; flex-direction: column; }
+
+/* Блок, который прижимается ко дну колонки и отбивается от основного меню.
+   Добавки — не часть ассортимента, а приписка к нему, и стоять должны отдельно. */
+.col__bottom {
+  margin-top: auto;
+  padding-top: 26px;
+  border-top: 1px solid var(--hair);
+}
+.col--1 { width: 520px; padding-right: 40px; }
+.col--2 { width: 620px; padding: 0 40px; border-left: 1px solid var(--hair); }
 .col--3 { flex-grow: 1; padding-left: 40px; border-left: 1px solid var(--hair); }
 
 /* --- Заголовок раздела --------------------------------------------------- */
@@ -263,7 +303,7 @@ body {
 }
 
 .cat + .cat,
-.rows + .cat { margin-top: 30px; }
+.rows + .cat { margin-top: 20px; }
 
 .cat__name {
   margin: 0;
@@ -275,15 +315,6 @@ body {
   white-space: nowrap;
 }
 
-.cat__note {
-  font-family: 'Plex Mono', monospace;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  color: var(--label);
-  white-space: nowrap;
-}
-
 .cat__spacer { flex-grow: 1; }
 
 /* --- Строка позиции ------------------------------------------------------ */
@@ -292,18 +323,13 @@ body {
   display: flex;
   align-items: baseline;
   gap: 16px;
-  padding: 10px 0;
+  padding: 9px 0;
 }
 
 .row__name { flex-grow: 1; font-size: 26px; }
 
-.row__vol {
-  font-family: 'Plex Mono', monospace;
-  font-size: 15px;
-  letter-spacing: 0.12em;
-  color: var(--label);
-  white-space: nowrap;
-}
+/* Цена всегда занимает колонку фиксированной ширины: только так над ней
+   можно поставить подпись объёма и быть уверенным, что они совпадут. */
 
 .row__price {
   font-family: 'Plex Mono', monospace;
@@ -312,6 +338,9 @@ body {
   color: var(--accent);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
+  width: 88px;
+  text-align: right;
+  flex-shrink: 0;
 }
 
 /* Два столбца цен для позиций с двумя объёмами.
@@ -324,21 +353,27 @@ body {
   flex-shrink: 0;
 }
 
+/* Шапка колонок. Оформлена намеренно иначе, чем цены: мельче, вразрядку,
+   без акцентного цвета и с отбивкой снизу — чтобы читалась как подпись
+   к столбцу, а не как ещё одно значение в нём. */
 .sizes {
   display: flex;
   align-items: baseline;
   gap: 16px;
-  padding-bottom: 2px;
+  padding-bottom: 7px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid var(--hair-soft);
 }
 
 .sizes__spacer { flex-grow: 1; min-width: 0; }
 
 .sizes__label {
   font-family: 'Plex Mono', monospace;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.18em;
   color: var(--label);
+  text-transform: uppercase;
 }
 
 .row__price--none { color: rgba(154, 146, 134, 0.55); }

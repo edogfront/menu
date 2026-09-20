@@ -15,12 +15,15 @@
   <header class="head">
     <div class="head__text">
       <img class="head__logo" src="media/logo.png" alt="КофеПей — всегда рады вас видеть">
-      <h1 class="head__title">Горячее</h1>
-      <span class="head__kinds">Кофе · Чай · Хот-доги</span>
+      <div class="head__section">
+        <h1 class="head__title">Горячее</h1>
+        <span class="head__kinds">Кофе · Чай · Хот-доги</span>
+      </div>
     </div>
 
     <div class="media">
-      <video autoplay muted loop playsinline preload="metadata" poster="media/hot-poster.jpg">
+      <img class="media__poster" src="media/hot-poster.jpg" alt="">
+      <video autoplay muted loop playsinline preload="auto">
         <source src="media/hot.mp4" type="video/mp4">
       </video>
     </div>
@@ -33,7 +36,11 @@
 
       <div class="cat">
         <h2 class="cat__name">Авторский кофе</h2>
-        <span class="cat__note">350 МЛ</span>
+      </div>
+
+      <div class="sizes">
+        <span class="sizes__spacer"></span>
+        <span class="sizes__label">350 мл</span>
       </div>
 
       <div class="rows">
@@ -47,7 +54,11 @@
 
       <div class="cat">
         <h2 class="cat__name">Чай</h2>
-        <span class="cat__note">350 МЛ</span>
+      </div>
+
+      <div class="sizes">
+        <span class="sizes__spacer"></span>
+        <span class="sizes__label">350 мл</span>
       </div>
 
       <div class="rows">
@@ -66,29 +77,37 @@
         <h2 class="cat__name">Шоколад</h2>
       </div>
 
+      <div class="sizes">
+        <span class="sizes__spacer"></span>
+        <span class="sizes__label">350 мл</span>
+        <span class="sizes__label">250 мл</span>
+      </div>
+
       <div class="rows">
         <div class="row">
           <span class="row__name">Какао</span>
-          <span class="row__vol">350 МЛ</span>
-          <span class="row__price">320</span>
+          <span class="row__price row__price--col">320</span>
+          <span class="row__price row__price--col row__price--none">—</span>
         </div>
         <div class="row">
           <span class="row__name">Горячий шоколад</span>
-          <span class="row__vol">250 МЛ</span>
-          <span class="row__price">320</span>
+          <span class="row__price row__price--col row__price--none">—</span>
+          <span class="row__price row__price--col">320</span>
         </div>
       </div>
 
-      <div class="cat">
-        <h2 class="cat__name">Добавки</h2>
-      </div>
+      <div class="col__bottom">
+        <div class="cat">
+          <h2 class="cat__name">Добавки</h2>
+        </div>
 
-      <div class="rows">
-        <div class="row"><span class="row__name">Молоко</span><span class="row__price">30</span></div>
-        <div class="row"><span class="row__name">Маршмеллоу</span><span class="row__price">40</span></div>
-        <div class="row"><span class="row__name">Кедровый орех</span><span class="row__price">100</span></div>
-        <div class="row"><span class="row__name">Альтернативное молоко</span><span class="row__price">50</span></div>
-        <div class="row"><span class="row__name">Сироп</span><span class="row__price">30</span></div>
+        <div class="rows">
+          <div class="row"><span class="row__name">Молоко</span><span class="row__price">30</span></div>
+          <div class="row"><span class="row__name">Маршмеллоу</span><span class="row__price">40</span></div>
+          <div class="row"><span class="row__name">Кедровый орех</span><span class="row__price">100</span></div>
+          <div class="row"><span class="row__name">Альтернативное молоко</span><span class="row__price">50</span></div>
+          <div class="row"><span class="row__name">Сироп</span><span class="row__price">30</span></div>
+        </div>
       </div>
 
     </div>
@@ -98,7 +117,6 @@
 
       <div class="cat">
         <h2 class="cat__name">Французские хот-доги</h2>
-        <span class="cat__note">ВСЕ ПО 200</span>
       </div>
 
       <div class="dish">
