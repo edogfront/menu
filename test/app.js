@@ -14,18 +14,45 @@
   var CHECK_EVERY = 30 * 60 * 1000;   // 30 минут
 
   /* --- Масштаб -------------------------------------------------------- */
+  /* Некоторые встроенные браузеры телевизоров при входе в полноэкранный
+     режим меняют реальный размер окна, но НЕ присылают событие resize
+     (или присылают его до того, как размер фактически поменялся). Тогда
+     --scale остаётся посчитан под старый размер, макет 1920x1080 рисуется
+     не в масштабе — и по центру экрана видна увеличенная середина сетки
+     без шапки с лого и видео. Поэтому здесь несколько источников правды
+     и несколько моментов пересчёта, а не один расчёт при загрузке. */
+
+  function viewportSize() {
+    // clientWidth/Height надёжнее innerWidth/Height на части TV-браузеров
+    var de = document.documentElement;
+    var w = de && de.clientWidth || window.innerWidth;
+    var h = de && de.clientHeight || window.innerHeight;
+    return { w: w, h: h };
+  }
 
   function fit() {
-    var scale = Math.min(
-      window.innerWidth / BASE_W,
-      window.innerHeight / BASE_H
-    );
+    var vp = viewportSize();
+    if (!vp.w || !vp.h) { return; }
+    var scale = Math.min(vp.w / BASE_W, vp.h / BASE_H);
     document.documentElement.style.setProperty('--scale', scale);
   }
 
   fit();
   window.addEventListener('resize', fit);
   window.addEventListener('orientationchange', fit);
+  document.addEventListener('fullscreenchange', fit);
+  document.addEventListener('webkitfullscreenchange', fit);
+  document.addEventListener('mozfullscreenchange', fit);
+  document.addEventListener('MSFullscreenChange', fit);
+
+  // Страховка: догоняем размер, который сменился с опозданием после
+  // перехода в полноэкранный режим на телевизорах без нормального resize.
+  [100, 500, 1500, 4000].forEach(function (delay) {
+    setTimeout(fit, delay);
+  });
+  // И постоянная лёгкая перепроверка — на случай, если ни одно событие
+  // так и не пришло. setProperty с тем же значением ничего не стоит.
+  setInterval(fit, 5000);
 
   /* --- Полный экран ---------------------------------------------------- */
 
@@ -40,6 +67,9 @@
     }
     var hint = document.querySelector('.hint');
     if (hint) { hint.style.display = 'none'; }
+    [50, 200, 600, 1500].forEach(function (delay) {
+      setTimeout(fit, delay);
+    });
   }
 
   document.addEventListener('click', goFullscreen);
