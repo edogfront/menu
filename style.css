@@ -325,7 +325,7 @@ body {
 
 /* Внутри плашки строки чуть плотнее: её собственные поля добавляют высоту,
    а колонка не должна становиться самой высокой и растягивать всю сетку. */
-.col--food .dish { padding: 10px 0; }
+.col--food .dish { padding: 16px 0; }
 
 /* --- Заголовок раздела --------------------------------------------------- */
 
@@ -432,9 +432,9 @@ body {
 .dish__name { flex-grow: 1; font-size: 28px; font-weight: 600; }
 
 .dish__desc {
-  margin: 5px 0 0;
-  font-size: 19px;
-  line-height: 1.35;
+  margin: 6px 0 0;
+  font-size: 23px;
+  line-height: 1.4;
   color: var(--muted);
 }
 
@@ -454,4 +454,81 @@ body {
   font-family: system-ui, sans-serif;
   font-size: 11px;
   color: rgba(242, 238, 231, 0.25);
+}
+
+/* ==========================================================================
+   Ожившие акценты — три лёгких CSS-эффекта, ничего не весят (ни картинок,
+   ни видео) и не мешают читаемости. Синхронный «пульс» держит цены и шапку
+   на одной фазе, чтобы не рябило по экрану вразнобой.
+   ========================================================================== */
+
+/* 1. Дыхание акцентного цвета: цены и заголовок экрана очень мягко
+      и медленно меняют яркость — вместо мёртвой плашки читается как живое. */
+@keyframes breatheAccent {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.7; }
+}
+
+.head__title,
+.head__kinds,
+.row__price:not(.row__price--none) {
+  animation: breatheAccent 3.6s ease-in-out infinite;
+}
+
+/* 2. Тёплое свечение вокруг плашки с хот-догами — только на странице
+      «Горячее». box-shadow не требует filter и рисуется снаружи рамки
+      самого элемента. */
+.col--food {
+  animation: foodGlow 4.5s ease-in-out infinite;
+}
+
+@keyframes foodGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(242, 238, 231, 0); }
+  50%      { box-shadow: 0 0 40px 8px rgba(242, 238, 231, 0.35); }
+}
+
+/* 3. Разделитель под названием категории. Разовая отрисовка при загрузке
+      почти никогда не попадалась на глаза — на боевом экране страница
+      перезагружается редко, и этот момент просто никто не видит. Поэтому
+      вместо однократного эффекта — небольшой тёплый блик, который медленно
+      и непрерывно проходит по линии. Он всегда есть на экране, всегда
+      что-то происходит, но сама линия остаётся тонкой и не мешает. */
+.cat {
+  position: relative;
+}
+
+.cat::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--hair) 0%,
+    var(--hair) 25%,
+    rgba(240, 90, 40, 0.45) 50%,
+    var(--hair) 75%,
+    var(--hair) 100%
+  );
+  background-size: 400% 100%;
+  animation: dividerShimmer 14s linear infinite;
+}
+
+@keyframes dividerShimmer {
+  0%   { background-position: 140% 0; }
+  100% { background-position: -140% 0; }
+}
+
+/* На случай, если у зрителя (не у ТВ, но на всякий случай — телефон/десктоп
+   при предпросмотре) включён запрет анимаций в системе. */
+@media (prefers-reduced-motion: reduce) {
+  .head__title,
+  .head__kinds,
+  .row__price,
+  .col--food,
+  .cat::after {
+    animation: none !important;
+  }
 }
