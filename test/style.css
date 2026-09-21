@@ -317,6 +317,7 @@ body {
    чтобы хот-доги читались как другая категория, а не ещё одна колонка чая. */
 .col--food {
   position: relative;
+  z-index: 0;   /* свой контекст наложения — свечение из ::before прячется под фон плашки */
   border-left: none;
   background: #1a1613;
   border-radius: 22px;
@@ -476,59 +477,28 @@ body {
   animation: breatheAccent 3.6s ease-in-out infinite;
 }
 
-/* 2. Пар — только на странице «Горячее», поднимается от плашки с
-      хот-догами (.steam--food в 1.html), чтобы сама плашка притягивала
-      взгляд и явно читалась как отдельная зона, а не часть напитков.
-      Контейнер стоит нижним краем ровно на верхней границе плашки
-      (bottom: 100% от .col--food), пар поднимается вверх и тает ещё до
-      шапки. Blur считается один раз, анимируются только transform/opacity —
-      дёшево даже на слабом ТВ. */
-.steam {
+/* 2. Дымка вокруг плашки с хот-догами — только на странице «Горячее».
+      Не отдельные «капли», а один мягкий размытый ореол чуть больше самой
+      плашки (inset отрицательный), который медленно вращается вокруг её
+      центра. Так как само пятно света внутри ореола смещено от центра,
+      вращение читается как рассеянный туман, плывущий по кругу вдоль
+      краёв плашки. Внутрь текста не заходит — прячется под фон плашки
+      через отрицательный z-index (см. .col--food). Анимируется только
+      transform, blur считается один раз — дёшево даже на слабом ТВ. */
+.col--food::before {
+  content: "";
   position: absolute;
-  z-index: 3;
-  overflow: visible;
+  inset: -34px;
+  z-index: -1;
+  border-radius: 44px;
+  background: radial-gradient(circle at 28% 32%, rgba(242, 238, 231, 0.55) 0%, rgba(242, 238, 231, 0) 58%);
+  filter: blur(22px);
+  animation: mistOrbit 26s linear infinite;
   pointer-events: none;
 }
 
-.steam--food {
-  left: 0;
-  right: 0;
-  bottom: 100%;
-  height: 90px;   /* до шапки с видео остаётся зазор — пар не должен наезжать на ролик */
-}
-
-.steam--food .steam__wisp {
-  animation-name: steamRiseShort;
-}
-
-@keyframes steamRiseShort {
-  0%   { transform: translateY(0) scale(1);       opacity: 0; }
-  16%  { opacity: 0.85; }
-  55%  { transform: translateY(-45px) scale(1.25); opacity: 0.6; }
-  100% { transform: translateY(-85px) scale(1.5);  opacity: 0; }
-}
-
-.steam__wisp {
-  position: absolute;
-  bottom: 0;
-  width: 40px;
-  height: 92px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(242, 238, 231, 0.95) 0%, rgba(242, 238, 231, 0) 68%);
-  filter: blur(3px);
-  opacity: 0;
-  animation: steamRise 6s ease-in infinite;
-}
-
-.steam--food .steam__wisp:nth-child(1) { left: 30%; animation-delay: 0s; }
-.steam--food .steam__wisp:nth-child(2) { left: 48%; animation-delay: 2s; }
-.steam--food .steam__wisp:nth-child(3) { left: 66%; animation-delay: 4s; }
-
-@keyframes steamRise {
-  0%   { transform: translateY(0) scale(1);      opacity: 0; }
-  16%  { opacity: 0.9; }
-  55%  { transform: translateY(-95px) scale(1.4); opacity: 0.65; }
-  100% { transform: translateY(-175px) scale(1.7); opacity: 0; }
+@keyframes mistOrbit {
+  to { transform: rotate(360deg); }
 }
 
 /* 3. Разделитель под названием категории. Разовая отрисовка при загрузке
@@ -571,7 +541,7 @@ body {
   .head__title,
   .head__kinds,
   .row__price,
-  .steam__wisp,
+  .col--food::before,
   .cat::after {
     animation: none !important;
   }
