@@ -455,3 +455,96 @@ body {
   font-size: 11px;
   color: rgba(242, 238, 231, 0.25);
 }
+
+/* ==========================================================================
+   Ожившие акценты — три лёгких CSS-эффекта, ничего не весят (ни картинок,
+   ни видео) и не мешают читаемости. Синхронный «пульс» держит цены и шапку
+   на одной фазе, чтобы не рябило по экрану вразнобой.
+   ========================================================================== */
+
+/* 1. Дыхание акцентного цвета: цены и заголовок экрана очень мягко
+      и медленно меняют яркость — вместо мёртвой плашки читается как живое. */
+@keyframes breatheAccent {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.82; }
+}
+
+.head__title,
+.head__kinds,
+.row__price:not(.row__price--none) {
+  animation: breatheAccent 5s ease-in-out infinite;
+}
+
+/* 2. Пар над горячими напитками — только на странице «Горячее» (класс
+      .steam добавлен в 1.html). Лежит в левой, уже растворённой маской
+      зоне медиаполосы, поэтому не спорит с видео. Blur считается один раз,
+      анимируются только transform/opacity — дёшево даже на слабом ТВ. */
+.steam {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 160px;
+  height: 100%;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.steam__wisp {
+  position: absolute;
+  bottom: 18px;
+  width: 34px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(242, 238, 231, 0.75) 0%, rgba(242, 238, 231, 0) 70%);
+  filter: blur(4px);
+  opacity: 0;
+  animation: steamRise 7s ease-in infinite;
+}
+
+.steam__wisp:nth-child(1) { left: 14px;  animation-delay: 0s; }
+.steam__wisp:nth-child(2) { left: 56px;  animation-delay: 2.3s; }
+.steam__wisp:nth-child(3) { left: 96px;  animation-delay: 4.6s; }
+
+@keyframes steamRise {
+  0%   { transform: translateY(0) scale(1);      opacity: 0; }
+  18%  { opacity: 0.7; }
+  55%  { transform: translateY(-90px) scale(1.35); opacity: 0.5; }
+  100% { transform: translateY(-170px) scale(1.6); opacity: 0; }
+}
+
+/* 3. Разделитель под названием категории «дорисовывается» один раз при
+      появлении меню и остаётся — тонкая деталь, подчёркивает структуру. */
+.cat {
+  position: relative;
+}
+
+.cat::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 100%;
+  height: 1px;
+  background: var(--hair);
+  transform-origin: left center;
+  transform: scaleX(0);
+  animation: drawDivider 1.3s cubic-bezier(.4, 0, .2, 1) forwards;
+  animation-delay: 0.35s;
+}
+
+@keyframes drawDivider {
+  to { transform: scaleX(1); }
+}
+
+/* На случай, если у зрителя (не у ТВ, но на всякий случай — телефон/десктоп
+   при предпросмотре) включён запрет анимаций в системе. */
+@media (prefers-reduced-motion: reduce) {
+  .head__title,
+  .head__kinds,
+  .row__price,
+  .steam__wisp,
+  .cat::after {
+    animation: none !important;
+  }
+}
